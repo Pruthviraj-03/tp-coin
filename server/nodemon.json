@@ -1,0 +1,6 @@
+{
+  "watch": ["src", "config"],
+  "ext": "js,json",
+  "ignore": ["node_modules"],
+  "exec": "node --inspect index.js"
+}
