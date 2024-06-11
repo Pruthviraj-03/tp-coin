@@ -6,8 +6,8 @@ import jwt from "jsonwebtoken";
 import twilio from "twilio";
 import dotenv from "dotenv";
 import { mailHelper } from "../utils/MailHelper.utils.js";
-import moment from "moment";
 import { CookieToken } from "../utils/CookieToken.utils.js";
+import cloudinary from "cloudinary";
 
 dotenv.config({
   path: "./.env",
@@ -254,47 +254,87 @@ const sendEmail = asyncHandler(async (req, res) => {
   }
 });
 
-const sendDetailToDB = asyncHandler(async (req, res) => {
+const deleteUser = asyncHandler(async (req, res) => {
   try {
-    const userId = req.user.id;
+    const user = await User.findById(req.user.id);
 
-    let user = await User.findById(userId);
+    const imageID = user.profilePic.id;
+    await cloudinary.v2.uploader.destroy(imageID);
 
-    const { email, name, phoneNumber, DOB, AlternateMobile } = req.body;
+    await User.findByIdAndRemove(req.user.id);
 
-    let formattedDOB;
-    if (DOB) {
-      const parsedDOB = moment(DOB, "YYYY-MM-DD", true);
-      if (!parsedDOB.isValid()) {
-        throw new ApiError(400, "Invalid date format for DOB");
-      }
-      formattedDOB = parsedDOB.format("YYYY-MM-DD");
-    }
+    res.clearCookie("token");
 
-    if (!user) {
-      user = new User({
-        _id: userId,
-        email,
-        name,
-        phoneNumber,
-        DOB: formattedDOB,
-        AlternateMobile,
-      });
-    } else {
-      user.email = email || user.email;
-      user.name = name || user.name;
-      user.phoneNumber = phoneNumber || user.phoneNumber;
-      user.DOB = formattedDOB || user.DOB;
-      user.AlternateMobile = AlternateMobile || user.AlternateMobile;
-    }
+    await mailHelper({
+      email: user.email,
+      subject: "Account Delete At TP-Coin",
+      message:
+        "You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!",
+      htmlMessage:
+        "<p>You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!</p>",
+    });
 
-    await user.save();
+    res.json(new ApiResponse(200, {}, "Account deleted successfully"));
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Failed to delete user account");
+  }
+});
+
+const getUserProfile = asyncHandler(async (req, res) => {
+  try {
+    const userProfile = await User.findById(req.user.id);
+
+    userProfile.passwords = undefined;
 
     res.json(
-      new ApiResponse(200, { user }, "User details saved successfully.")
+      new ApiResponse(200, { userProfile }, "Get user data successfully")
     );
   } catch (error) {
-    throw new ApiError(500, error?.message || "Failed to save the details.");
+    throw new ApiError(500, error?.message || "Failed to get user data");
+  }
+});
+
+const editUserProfile = asyncHandler(async (req, res) => {
+  try {
+    const newData = {
+      fullName: req.body.fullName,
+      email: req.body.email,
+      contactNo: req.body.contactNo,
+    };
+
+    if (req.files) {
+      const user = await User.findById(req.user.id);
+
+      const imageID = user.profilePic.id;
+      await cloudinary.v2.uploader.destroy(imageID);
+
+      const result = await cloudinary.v2.uploader.upload(
+        req.files.profilePic.tempFilePath,
+        {
+          folder: "users",
+          width: 150,
+          crop: "scale",
+        }
+      );
+
+      newData.profilePic = {
+        id: result.public_id,
+        secure_url: result.secure_url,
+      };
+    }
+
+    await User.findByIdAndUpdate(req.user.id, newData, {
+      new: true,
+      reunValidators: true,
+      useFindAndModify: false,
+    });
+
+    res.json(new ApiResponse(200, {}, "Details Changed successfully"));
+  } catch (error) {
+    throw new ApiError(
+      500,
+      error?.message || "Failed to change the user details"
+    );
   }
 });
 
@@ -306,6 +346,8 @@ export {
   verifyOTP,
   resendOTP,
   sendEmail,
-  sendDetailToDB,
   userLogin,
+  deleteUser,
+  getUserProfile,
+  editUserProfile,
 };

@@ -6,8 +6,10 @@ import {
   verifyOTP,
   resendOTP,
   sendEmail,
-  sendDetailToDB,
   userLogin,
+  deleteUser,
+  getUserProfile,
+  editUserProfile,
 } from "../controllers/user.controller.js";
 import { razorpayPayment } from "../utils/Razorpay.utils.js";
 import { authMiddleWare } from "../middlewares/auth.middleware.js";
@@ -42,8 +44,12 @@ router.route("/refresh-token").post(refreshAccessToken);
 
 router.route("/subscribe").post(sendEmail);
 
-router.route("/editprofile").post(authMiddleWare, sendDetailToDB);
+router.route("/razorpay/payment").post(authMiddleWare, razorpayPayment);
 
-router.route("/razorpay/payment").post(razorpayPayment);
+router.route("/deleteUser").delete(authMiddleWare, deleteUser);
+
+router.route("/getUserProfile").get(authMiddleWare, getUserProfile);
+
+router.route("/editUserProfile").post(authMiddleWare, editUserProfile);
 
 export { router };

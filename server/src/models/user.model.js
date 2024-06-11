@@ -14,8 +14,6 @@ const userSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
     },
-    gender: { type: String, enum: ["Male", "Female"] },
-    DOB: { type: Date },
     AlternateMobile: {
       type: String,
       sparse: true,
@@ -26,6 +24,44 @@ const userSchema = new mongoose.Schema(
     otpExpires: { type: Date, select: false },
     wishlist: [{ type: Object }],
     cart: [{ type: Object }],
+    myCoins: [
+      {
+        coinId: {
+          type: String,
+        },
+        image: {
+          type: String,
+        },
+        symbol: {
+          type: String,
+        },
+        name: {
+          type: String,
+        },
+        quantity: {
+          type: Number,
+        },
+        paymentToken: {
+          type: String,
+        },
+      },
+    ],
+    watchlists: [
+      {
+        watchlist_coinId: {
+          type: String,
+        },
+        watchlist_image: {
+          type: String,
+        },
+        watchlist_symbol: {
+          type: String,
+        },
+        watchlist_name: {
+          type: String,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
