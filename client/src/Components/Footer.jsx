@@ -10,13 +10,13 @@ const Footer = () => {
   return (
     <footer className="font-nunito select-none p-10 text-base-content bg-gray-400 footer-center">
       <div className="grid grid-flow-col gap-4 font-semibold uppercase justify-center">
-        <Link href="#" className="link link-hover hover:text-gray-400">
+        <Link href="#" className="link link-hover hover:text-gray-100">
           About us
         </Link>
-        <Link href="#" className="link link-hover hover:text-gray-400">
+        <Link href="#" className="link link-hover hover:text-gray-100">
           Contact
         </Link>
-        <Link href="#" className="link link-hover hover:text-gray-400">
+        <Link href="#" className="link link-hover hover:text-gray-100">
           Jobs
         </Link>
       </div>
@@ -25,7 +25,7 @@ const Footer = () => {
           target="_blank"
           rel="noopener noreferrer"
           href={twitterUrl}
-          className="text-2xl hover:text-gray-400"
+          className="text-2xl hover:text-gray-100"
         >
           <FaTwitter />
         </a>
@@ -33,7 +33,7 @@ const Footer = () => {
           target="_blank"
           rel="noopener noreferrer"
           href={youtubeUrl}
-          className="text-2xl hover:text-gray-400"
+          className="text-2xl hover:text-gray-100"
         >
           <FaYoutube />
         </a>
@@ -41,14 +41,14 @@ const Footer = () => {
           target="_blank"
           rel="noopener noreferrer"
           href={facebookUrl}
-          className="text-2xl hover:text-gray-400"
+          className="text-2xl hover:text-gray-100"
         >
           <FaFacebookSquare />
         </a>
       </div>
       <div className="text-center">
         <p className="text-sm">
-          &copy; 2021-22 - All rights reserved by Armiet BE boys
+          &copy; 2024-25 - All rights reserved by tp-coin
         </p>
       </div>
     </footer>

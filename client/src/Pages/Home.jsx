@@ -19,7 +19,7 @@ import Footer from "../Components/Footer";
 
 const Home = () => {
   // const cookies = new Cookies();
-  // const history = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     Aos.init({ duration: 2000 });
@@ -27,9 +27,9 @@ const Home = () => {
 
   // useEffect(() => {
   //   if (!cookies.get("isLogin")) {
-  //     history.push("/login");
+  //     navigate("/login");
   //   } else {
-  //     history.push("/");
+  //     navigate("/");
   //   }
   // }, []);
 

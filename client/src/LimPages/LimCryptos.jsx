@@ -10,7 +10,7 @@ const LimCryptos = () => {
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(false);
   const { currency, symbols } = CryptoState();
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const getData = async () => {
     try {
@@ -98,9 +98,7 @@ const LimCryptos = () => {
                           <tr key={id}>
                             <td
                               className="px-6 py-5 whitespace-nowrap mobile:px-0"
-                              onClick={() =>
-                                history.push(`/coins/${curElem.id}`)
-                              }
+                              onClick={() => navigate(`/coins/${curElem.id}`)}
                             >
                               <div className="flex items-center cursor-pointer">
                                 <div className="flex-shrink-0 h-10 w-10">
@@ -159,9 +157,7 @@ const LimCryptos = () => {
 
                             <td className="pr-20 py-4 whitespace-nowrap text-right font-medium tablet:hidden mobile:hidden">
                               <button
-                                onClick={() =>
-                                  history.push(`/coins/${curElem.id}`)
-                                }
+                                onClick={() => navigate(`/coins/${curElem.id}`)}
                                 className="text-indigo-600 hover:underline text-sm"
                               >
                                 View Details
