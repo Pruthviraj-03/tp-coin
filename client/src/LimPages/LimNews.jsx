@@ -9,18 +9,18 @@ const LimNews = () => {
     try {
       const setHeader = {
         headers: {
-          "x-rapidapi-host": "crypto-news-live3.p.rapidapi.com",
           "x-rapidapi-key":
-            "08295af6edmsh25c9fc24b3b7d6fp1b591ejsn18d6e7fda81d",
+            "07e53fe405mshfb53f09b4c35667p1618fbjsn933bef5d77d2",
+          "x-rapidapi-host": "cryptonews16.p.rapidapi.com",
         },
       };
 
       const res = await axios.get(
-        "https://crypto-news-live3.p.rapidapi.com/news",
+        "https://cryptonews16.p.rapidapi.com/news",
         setHeader
       );
 
-      const responce = res.data;
+      const responce = res.data.data;
       setNews(responce);
     } catch (err) {
       console.log(err);
@@ -40,7 +40,7 @@ const LimNews = () => {
       <div className="flex flex-row flex-wrap justify-around mx-48 mobile:mx-2">
         {news ? (
           news.slice(0, 6).map((curElm, id) => {
-            const { title, url } = curElm;
+            const { title, link } = curElm;
             return (
               <div
                 key={id}
@@ -50,8 +50,8 @@ const LimNews = () => {
                 <div className="h-1/2 w-full flex flex-col gap-5 font-nunito">
                   <p className="text-xl font-semibold">{title}</p>
                   <p className="text-2xs text-blue-700 cursor-pointer">
-                    <a target="_blank" rel="noopener noreferrer" href={url}>
-                      {url}
+                    <a target="_blank" rel="noopener noreferrer" href={link}>
+                      {link}
                     </a>
                   </p>
                 </div>
@@ -64,7 +64,10 @@ const LimNews = () => {
       </div>
 
       <p className="text-center text-gray-500 font-light pt-5 pb-5 font-nunito">
-        <Link to="/news" className="cursor-pointer">
+        <Link
+          to="/news"
+          className="inline-block px-6 py-2 text-sm font-medium leading-6 text-center text-white transition bg-blue-500 rounded-full shadow ripple hover:shadow-lg hover:bg-blue-600 focus:outline-none"
+        >
           view more news
         </Link>
       </p>

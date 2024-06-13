@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { SingleCoin } from "../Config/Api";
 import { CryptoState } from "../Context/CryptoContext";
-import ChartCrypto from "./ChartCrypto";
+// import ChartCrypto from "./ChartCrypto";
 import NavBar from "../Components/NavBar";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { createContext } from "react";
 import Spinner from "../Components/Spinner";
@@ -117,12 +117,12 @@ const CryptoDetails = () => {
         "https://checkout.razorpay.com/v1/checkout.js"
       );
 
-      if (!res) {
-        toast.warning("Payment failed, check your connection!", {
-          position: toast.POSITION.TOP_CENTER,
-          autoClose: 3000,
-        });
-      }
+      // if (!res) {
+      //   toast.warning("Payment failed, check your connection!", {
+      //     position: toast.POSITION.TOP_CENTER,
+      //     autoClose: 3000,
+      //   });
+      // }
 
       const response = await axios.post("/razorpay/payment", {
         amount: coin?.market_data.current_price.inr * 100 * counter,
@@ -150,10 +150,10 @@ const CryptoDetails = () => {
           localStorage.setItem("quantity", counter);
 
           window.location.reload(false);
-          toast.success("Payment successful!", {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 3000,
-          });
+          // toast.success("Payment successful!", {
+          //   position: toast.POSITION.TOP_CENTER,
+          //   autoClose: 3000,
+          // });
         },
 
         //remove this seaction while hosting
@@ -171,10 +171,10 @@ const CryptoDetails = () => {
       paymentObject.open();
     } catch (error) {
       navigate("/login");
-      return toast.warning("Login to make a Payment!", {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 3000,
-      });
+      // return toast.warning("Login to make a Payment!", {
+      //   position: toast.POSITION.TOP_CENTER,
+      //   autoClose: 3000,
+      // });
     }
   };
 
@@ -212,10 +212,10 @@ const CryptoDetails = () => {
           localStorage.removeItem("isBuyCoin");
           localStorage.removeItem("quantity");
           navigate("/");
-          toast.success(`${coin?.name} buy successfully!`, {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 3000,
-          });
+          // toast.success(`${coin?.name} buy successfully!`, {
+          //   position: toast.POSITION.TOP_CENTER,
+          //   autoClose: 3000,
+          // });
         }
       } catch (error) {
         console.log(error);
@@ -246,10 +246,10 @@ const CryptoDetails = () => {
           localStorage.removeItem("isBuyCoin");
           localStorage.removeItem("quantity");
           navigate("/");
-          toast.success(`${coin?.name} buy successfully!`, {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 3000,
-          });
+          // toast.success(`${coin?.name} buy successfully!`, {
+          //   position: toast.POSITION.TOP_CENTER,
+          //   autoClose: 3000,
+          // });
         }
       } catch (error) {
         console.log(error);
@@ -261,10 +261,10 @@ const CryptoDetails = () => {
   const addWatchlist = async () => {
     const watchListRes = watchlistCoinArr.find((e) => e === coin?.name);
     if (watchListRes) {
-      toast.warning(`${coin?.name} already present in watchlist!`, {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 3000,
-      });
+      // toast.warning(`${coin?.name} already present in watchlist!`, {
+      //   position: toast.POSITION.TOP_CENTER,
+      //   autoClose: 3000,
+      // });
     } else {
       const coinData = {
         watchlist_coinId: coin?.id,
@@ -284,18 +284,18 @@ const CryptoDetails = () => {
 
         if (data) {
           navigate("/");
-          toast.success(`${coin?.name} added to watchlist!`, {
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 3000,
-          });
+          // toast.success(`${coin?.name} added to watchlist!`, {
+          //   position: toast.POSITION.TOP_CENTER,
+          //   autoClose: 3000,
+          // });
         }
       } catch (error) {
         console.log(error);
         navigate("/login");
-        return toast.warning(`Login to Add a ${coin?.name} to WatchList!`, {
-          position: toast.POSITION.TOP_CENTER,
-          autoClose: 3000,
-        });
+        // return toast.warning(`Login to Add a ${coin?.name} to WatchList!`, {
+        //   position: toast.POSITION.TOP_CENTER,
+        //   autoClose: 3000,
+        // });
       }
     }
   };
@@ -400,7 +400,7 @@ const CryptoDetails = () => {
         )}
 
         <div className="w-1/2 mobile:w-full tablet:w-full">
-          <ChartCrypto />
+          {/* <ChartCrypto /> */}
 
           <div className="flex justify-center items-center gap-2 mt-8 pc:hidden laptop:hidden tablet:hidden">
             <button

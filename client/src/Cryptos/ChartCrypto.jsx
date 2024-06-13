@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-
 import { CryptoState } from "../Context/CryptoContext";
 import { HistoricalChart } from "../Config/Api";
 import { chartDays } from "../Config/ChartData";
 import Spinner from "../Components/Spinner";
-
 import { Line } from "react-chartjs-2";
 import { Chart } from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";

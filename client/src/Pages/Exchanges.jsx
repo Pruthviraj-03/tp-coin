@@ -18,7 +18,7 @@ const Exchanges = () => {
       };
 
       const res = await axios.get(
-        "https://coinranking1.p.rapidapi.com/coin/Qwsogvtv82FCd/exchanges",
+        // "https://coinranking1.p.rapidapi.com/coin/Qwsogvtv82FCd/exchanges",
         setHeader
       );
 

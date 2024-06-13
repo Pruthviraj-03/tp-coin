@@ -12,7 +12,7 @@ import Login from "./Auth/Login";
 import Logout from "./Auth/Logout";
 import Profile from "./Auth/Profile";
 import EditProfile from "./Auth/EditProfile";
-import DeleteProfile from "./Auth/DeleteProfilel";
+import DeleteProfile from "./Auth/DeleteProfile";
 import ErrorPage from "./Components/ErrorPage";
 
 const App = () => {

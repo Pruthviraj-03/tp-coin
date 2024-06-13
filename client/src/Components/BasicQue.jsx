@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const BasicQue = () => {
   const BasicQue = [
@@ -51,27 +51,38 @@ const BasicQue = () => {
         " Cryptocurrency mining is a process through which miners verify transactions on the blockchain and receive cryptocurrencies in exchange as rewards. It helps in the smooth sustenance of the network.",
     },
   ];
+  const [openQuestions, setOpenQuestions] = useState({});
+
+  const toggleQuestion = (id) => {
+    setOpenQuestions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   return (
-    <div className="font-nunito select-none shadow-md mx-60 mb-14 p-2 laptop:mx-10 tablet:mx-10 mobile:mx-2 mobile:p-0 mobile:shadow-md">
-      <p className="text-center font-bold text-2xl py-5 pb-10 mobile:text-xl">
+    <div className="font-nunito select-none shadow-lg mx-60 mb-14 p-2 laptop:mx-10 tablet:mx-10 mobile:mx-2 mobile:p-0 mobile:shadow-lg bg-white">
+      <p className="text-center font-bold text-2xl py-5 pb-10 mobile:text-xl text-gray-800">
         Frequently Asked Questions.
       </p>
       {BasicQue.map((que) => (
         <div
-          className="collapse border border-base-300 rounded-md mobile:py-2"
+          className="border border-gray-300 rounded-md mb-2 mobile:py-2 bg-gray-50"
           key={que.id}
         >
-          <input type="checkbox" />
-
-          <div className="collapse-title px-5 py-4 bg-gray-100">
-            <p className="font-bold pb-4 text-xl capitalize cursor-pointer">
+          <div
+            className="px-5 py-4 bg-gray-100 hover:bg-gray-200 cursor-pointer"
+            onClick={() => toggleQuestion(que.id)}
+          >
+            <p className="font-bold text-xl capitalize text-gray-800">
               {que.question}
             </p>
           </div>
-
-          <div className="collapse-content text-lg font-medium px-5 mobile:text-base">
-            <p className="font-medium py-2">{que.answer}</p>
-          </div>
+          {openQuestions[que.id] && (
+            <div className="text-lg font-medium px-5 mobile:text-base bg-white text-gray-700">
+              <p className="font-medium py-2">{que.answer}</p>
+            </div>
+          )}
         </div>
       ))}
     </div>
