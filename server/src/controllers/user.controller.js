@@ -169,6 +169,32 @@ const logoutUser = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    const imageID = user.profilePic.id;
+    await cloudinary.v2.uploader.destroy(imageID);
+
+    await User.findByIdAndRemove(req.user.id);
+
+    res.clearCookie("token");
+
+    await mailHelper({
+      email: user.email,
+      subject: "Account Delete At TP-Coin",
+      message:
+        "You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!",
+      htmlMessage:
+        "<p>You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!</p>",
+    });
+
+    res.json(new ApiResponse(200, {}, "Account deleted successfully"));
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Failed to delete user account");
+  }
+});
+
 const sendOTP = async (req, res) => {
   try {
     const { phoneNumber } = req.body;
@@ -285,101 +311,15 @@ const sendEmail = asyncHandler(async (req, res) => {
   }
 });
 
-const deleteUser = asyncHandler(async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-
-    const imageID = user.profilePic.id;
-    await cloudinary.v2.uploader.destroy(imageID);
-
-    await User.findByIdAndRemove(req.user.id);
-
-    res.clearCookie("token");
-
-    await mailHelper({
-      email: user.email,
-      subject: "Account Delete At TP-Coin",
-      message:
-        "You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!",
-      htmlMessage:
-        "<p>You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!</p>",
-    });
-
-    res.json(new ApiResponse(200, {}, "Account deleted successfully"));
-  } catch (error) {
-    throw new ApiError(500, error?.message || "Failed to delete user account");
-  }
-});
-
-const getUserProfile = asyncHandler(async (req, res) => {
-  try {
-    const userProfile = await User.findById(req.user.id);
-
-    userProfile.passwords = undefined;
-
-    res.json(
-      new ApiResponse(200, { userProfile }, "Get user data successfully")
-    );
-  } catch (error) {
-    throw new ApiError(500, error?.message || "Failed to get user data");
-  }
-});
-
-const editUserProfile = asyncHandler(async (req, res) => {
-  try {
-    const newData = {
-      fullName: req.body.fullName,
-      email: req.body.email,
-      contactNo: req.body.contactNo,
-    };
-
-    if (req.files) {
-      const user = await User.findById(req.user.id);
-
-      const imageID = user.profilePic.id;
-      await cloudinary.v2.uploader.destroy(imageID);
-
-      const result = await cloudinary.v2.uploader.upload(
-        req.files.profilePic.tempFilePath,
-        {
-          folder: "users",
-          width: 150,
-          crop: "scale",
-        }
-      );
-
-      newData.profilePic = {
-        id: result.public_id,
-        secure_url: result.secure_url,
-      };
-    }
-
-    await User.findByIdAndUpdate(req.user.id, newData, {
-      new: true,
-      reunValidators: true,
-      useFindAndModify: false,
-    });
-
-    res.json(new ApiResponse(200, {}, "Details Changed successfully"));
-  } catch (error) {
-    throw new ApiError(
-      500,
-      error?.message || "Failed to change the user details"
-    );
-  }
-});
-
 export {
   generateAccessAndRefreshTokens,
-  logoutUser,
   refreshAccessToken,
+  userLogin,
+  sendDetailToDB,
+  logoutUser,
+  deleteUser,
   sendOTP,
   verifyOTP,
   resendOTP,
   sendEmail,
-  userLogin,
-  deleteUser,
-  getUserProfile,
-  editUserProfile,
-  sendDetailToDB,
 };

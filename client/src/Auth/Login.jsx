@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import signImg from "../Images/signup.png";
@@ -18,25 +18,21 @@ const Register = () => {
     setPhoneNumber(e.target.value);
   };
 
-  const handleContinue = () => {
-    navigate("/login/otp");
+  const handleContinue = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8000/api/v1/users/send-otp",
+        {
+          phoneNumber,
+        },
+        { withCredentials: true }
+      );
+      localStorage.setItem("phoneNumber", phoneNumber);
+      navigate("/login/otp");
+    } catch (error) {
+      console.error("Failed to send OTP:", error);
+    }
   };
-
-  // const handleContinue = async () => {
-  //   try {
-  //     await axios.post(
-  //       "http://localhost:8000/api/v1/users/send-otp",
-  //       {
-  //         phoneNumber,
-  //       },
-  //       { withCredentials: true }
-  //     );
-  //     localStorage.setItem("phoneNumber", phoneNumber);
-  //     navigate("/login/otp");
-  //   } catch (error) {
-  //     console.error("Failed to send OTP:", error);
-  //   }
-  // };
 
   return (
     <>
@@ -70,7 +66,6 @@ const Register = () => {
                     </div>
                     <div
                       className="flex justify-center items-center w-full h-10 bg-blue-600 text-white font-bold rounded cursor-pointer hover:bg-blue-700"
-                      // onClick={handleContinue}
                       onClick={handleContinue}
                     >
                       <span className="text-base">CONTINUE</span>

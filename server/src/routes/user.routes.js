@@ -1,16 +1,14 @@
 import { Router } from "express";
 import {
-  logoutUser,
   refreshAccessToken,
+  userLogin,
+  sendDetailToDB,
+  logoutUser,
+  deleteUser,
   sendOTP,
   verifyOTP,
   resendOTP,
   sendEmail,
-  userLogin,
-  deleteUser,
-  getUserProfile,
-  editUserProfile,
-  sendDetailToDB,
 } from "../controllers/user.controller.js";
 import { razorpayPayment } from "../utils/Razorpay.utils.js";
 import { authMiddleWare } from "../middlewares/auth.middleware.js";
@@ -33,7 +31,11 @@ router.route("/google/callback").get(
 
 router.route("/login/success").get(authMiddleWare, userLogin);
 
+router.route("/editprofile").post(authMiddleWare, sendDetailToDB);
+
 router.route("/logout").get(authMiddleWare, logoutUser);
+
+router.route("/deleteUser").delete(authMiddleWare, deleteUser);
 
 router.route("/send-otp").post(sendOTP);
 
@@ -41,18 +43,10 @@ router.route("/verify-otp").post(verifyOTP);
 
 router.route("/resend-otp").post(resendOTP);
 
-router.route("/refresh-token").post(refreshAccessToken);
-
 router.route("/subscribe").post(sendEmail);
 
+router.route("/refresh-token").post(refreshAccessToken);
+
 router.route("/razorpay/payment").post(authMiddleWare, razorpayPayment);
-
-router.route("/deleteUser").delete(authMiddleWare, deleteUser);
-
-router.route("/getUserProfile").get(authMiddleWare, getUserProfile);
-
-router.route("/editUserProfile").post(authMiddleWare, editUserProfile);
-
-router.route("/editprofile").post(authMiddleWare, sendDetailToDB);
 
 export { router };
