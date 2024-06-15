@@ -95,7 +95,7 @@ const userLogin = asyncHandler(async (req, res) => {
   try {
     const userId = req.user._id;
     const user = await User.findById(userId).select(
-      "-googleId -picture -accessToken -refreshToken -otp -otpExpires"
+      "-googleId -accessToken -refreshToken -otp -otpExpires"
     );
 
     if (!user) {
@@ -107,6 +107,37 @@ const userLogin = asyncHandler(async (req, res) => {
     // console.log("User data found", user);
   } catch (error) {
     throw new ApiError(500, error.message || "Failed to fetch user data");
+  }
+});
+
+const sendDetailToDB = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    let user = await User.findById(userId);
+
+    const { email, name, phoneNumber } = req.body;
+
+    if (!user) {
+      user = new User({
+        _id: userId,
+        email,
+        name,
+        phoneNumber,
+      });
+    } else {
+      user.email = email || user.email;
+      user.name = name || user.name;
+      user.phoneNumber = phoneNumber || user.phoneNumber;
+    }
+
+    await user.save();
+
+    res.json(
+      new ApiResponse(200, { user }, "User details saved successfully.")
+    );
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Failed to save the details.");
   }
 });
 
@@ -350,4 +381,5 @@ export {
   deleteUser,
   getUserProfile,
   editUserProfile,
+  sendDetailToDB,
 };

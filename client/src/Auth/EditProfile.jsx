@@ -1,43 +1,62 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router";
 import ProfilePng from "../Images/profile.png";
 import NavBar from "../Components/NavBar";
 
 const EditProfile = () => {
   const navigate = useNavigate();
-
-  const [user, setUser] = useState({
-    profilePic: "https://via.placeholder.com/150",
-    fullName: "John Doe",
-    email: "johndoe@example.com",
-    contactNo: "123-456-7890",
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
   });
 
-  const handleInputs = (e) => {
-    const { name, value } = e.target;
-    setUser({ ...user, [name]: value });
-  };
-
-  const handleImage = (e) => {
-    setUser({ ...user, profilePic: URL.createObjectURL(e.target.files[0]) });
-  };
-
   useEffect(() => {
-    const fetchData = () => {
-      setUser({
-        profilePic: "https://via.placeholder.com/150",
-        fullName: "John Doe",
-        email: "johndoe@example.com",
-        contactNo: "123-456-7890",
-      });
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v1/users/login/success",
+          { withCredentials: true }
+        );
+
+        const userData = response.data.data.user;
+        setFormData({
+          name: userData.name || "",
+          email: userData.email || "",
+          phoneNumber: userData.phoneNumber || "",
+        });
+      } catch (error) {
+        console.log("error fetching user data:", error);
+      }
     };
 
-    fetchData();
+    fetchUserData();
   }, []);
 
-  const submitEditProfileDetails = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/profile");
+    try {
+      await axios.post(
+        "http://localhost:8000/api/v1/users/editprofile",
+        {
+          ...formData,
+        },
+        { withCredentials: true }
+      );
+      console.log("User details saved successfully.");
+      navigate("/profile");
+    } catch (error) {
+      console.error("Error saving user details:", error);
+    }
   };
 
   return (
@@ -46,22 +65,11 @@ const EditProfile = () => {
 
       <div className="flex justify-center">
         <div className="font-nunito w-3/5 py-5 px-8 laptop:w-4/5 tablet:w-full mobile:w-full mobile:px-0">
-          <form autoComplete="off" onSubmit={submitEditProfileDetails}>
+          <form autoComplete="off" onSubmit={handleSubmit}>
             <div className="pt-40 pb-20 mobile:pt-24 mobile:pb-10">
               <div className="mx-5 px-5 bg-gray-50 py-10 border-2 border-gray-300 hover:border-black rounded-lg shadow-xl">
                 <div className="flex items-center justify-around p-10 mobile:px-0 mobile:py-2">
                   <div>
-                    <div className="avatar online">
-                      <div className="rounded-full w-24 h-24">
-                        <img src={user.profilePic} alt="user profile pic" />
-                      </div>
-                    </div>
-                    <input
-                      type="file"
-                      name="myprofilePic"
-                      onChange={handleImage}
-                    />
-
                     <div className="pt-5">
                       <label className="text-lg lowercase text-gray-500">
                         Full Name :
@@ -71,9 +79,10 @@ const EditProfile = () => {
                         minLength="2"
                         maxLength="20"
                         pattern="[a-zA-Z]+([ ]?[a-zA-Z]+)*"
-                        name="fullName"
-                        value={user.fullName}
-                        onChange={handleInputs}
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
                         placeholder="name"
                         className="text-md block px-3 py-2 rounded-lg w-full border-2 border-gray-300
                             shadow-md focus:bg-white focus:border-gray-600 focus:outline-none my-4"
@@ -88,10 +97,11 @@ const EditProfile = () => {
                         type="tel"
                         minLength="10"
                         maxLength="10"
-                        pattern="^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$"
-                        name="contactNo"
-                        value={user.contactNo}
-                        onChange={handleInputs}
+                        // pattern="^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleChange}
+                        required
                         placeholder="valid contact number only"
                         className="text-md block px-3 py-2 rounded-lg w-full border-2 border-gray-300
                             shadow-md focus:bg-white focus:border-gray-600 focus:outline-none my-4"
@@ -105,8 +115,9 @@ const EditProfile = () => {
                       <input
                         type="email"
                         name="email"
-                        value={user.email}
-                        onChange={handleInputs}
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
                         pattern="[a-z0-9.]+@[a-z0-9.]+\.[a-z]{2,6}$"
                         placeholder="valid email@email.com only"
                         className="text-md block px-3 py-2 rounded-lg w-full border-2 border-gray-300

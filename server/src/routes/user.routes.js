@@ -10,6 +10,7 @@ import {
   deleteUser,
   getUserProfile,
   editUserProfile,
+  sendDetailToDB,
 } from "../controllers/user.controller.js";
 import { razorpayPayment } from "../utils/Razorpay.utils.js";
 import { authMiddleWare } from "../middlewares/auth.middleware.js";
@@ -51,5 +52,7 @@ router.route("/deleteUser").delete(authMiddleWare, deleteUser);
 router.route("/getUserProfile").get(authMiddleWare, getUserProfile);
 
 router.route("/editUserProfile").post(authMiddleWare, editUserProfile);
+
+router.route("/editprofile").post(authMiddleWare, sendDetailToDB);
 
 export { router };

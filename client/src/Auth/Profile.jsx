@@ -1,31 +1,26 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import ProfilePng from "../Images/profile.png";
 import NavBar from "../Components/NavBar";
 
 const Profile = () => {
-  const [userData, setUserData] = useState({
-    userProfile: {
-      profilePic: { secure_url: "https://via.placeholder.com/150" },
-      fullName: "John Doe",
-      contactNo: "123-456-7890",
-      email: "johndoe@example.com",
-    },
-  });
+  const [userData, setUserData] = useState({});
+
+  const getUser = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/v1/users/login/success",
+        { withCredentials: true }
+      );
+      setUserData(response.data.data.user);
+    } catch (error) {
+      console.log("error fetching user data:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = () => {
-      setUserData({
-        userProfile: {
-          profilePic: { secure_url: "https://via.placeholder.com/150" },
-          fullName: "John Doe",
-          contactNo: "123-456-7890",
-          email: "johndoe@example.com",
-        },
-      });
-    };
-
-    fetchData();
+    getUser();
   }, []);
 
   return (
@@ -39,20 +34,13 @@ const Profile = () => {
               <div className="mx-5 px-5 bg-gray-50 border-2 border-gray-300 hover:border-black rounded-lg shadow-md">
                 <div className="flex items-center justify-around p-10 mobile:px-0 mobile:py-2">
                   <div>
-                    <div className="avatar online">
-                      <div className="rounded-full w-24 h-24">
-                        <img
-                          src={userData.userProfile.profilePic.secure_url}
-                          alt="user profile pic"
-                        />
-                      </div>
-                    </div>
+                    <div className="avatar online"></div>
                     <div className="pt-5">
                       <label className="text-lg lowercase text-gray-500">
                         Full Name :
                       </label>
                       <p className="text-xl font-medium text-gray-700">
-                        {userData.userProfile.fullName}
+                        {userData.name}
                       </p>
                     </div>
                     <div className="pt-5">
@@ -60,7 +48,7 @@ const Profile = () => {
                         Contact No :
                       </label>
                       <p className="text-xl font-medium text-gray-700">
-                        {userData.userProfile.contactNo}
+                        {userData.phoneNumber}
                       </p>
                     </div>
                     <div className="pt-5">
@@ -68,7 +56,7 @@ const Profile = () => {
                         Email id :
                       </label>
                       <p className="text-xl font-medium text-gray-700">
-                        {userData.userProfile.email}
+                        {userData.email}
                       </p>
                     </div>
 

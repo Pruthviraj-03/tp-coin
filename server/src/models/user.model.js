@@ -14,10 +14,6 @@ const userSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
     },
-    AlternateMobile: {
-      type: String,
-      sparse: true,
-    },
     accessToken: { type: String },
     refreshToken: { type: String },
     otp: { type: String, select: false },
