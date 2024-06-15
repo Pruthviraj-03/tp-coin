@@ -19,7 +19,7 @@ const Header = () => {
           <div>
             <button
               className="my-5 text-2xl font-semibold bg-gray-800 hover:bg-black text-gray-50 rounded-md px-5 py-2 mobile:text-xl"
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/login")}
             >
               Register Now
             </button>

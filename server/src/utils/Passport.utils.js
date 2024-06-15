@@ -46,9 +46,9 @@ passport.use(
 
           await mailHelper({
             email,
-            subject: "Login At Modazen",
-            message: "You've successfully Login at Modazen!",
-            htmlMessage: "<p>You've successfully Login at Modazen!</p>",
+            subject: "Login At Tp-Coin",
+            message: "You've successfully Login at Tp-Coin!",
+            htmlMessage: "<p>You've successfully Login at Tp-Coin!</p>",
           });
         }
 
