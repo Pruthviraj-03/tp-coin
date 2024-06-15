@@ -5,11 +5,11 @@ import { User } from "../models/user.model.js";
 
 const authMiddleWare = asyncHandler(async (req, res, next) => {
   try {
-    console.log("cookie:", req.cookies);
+    // console.log("cookie:", req.cookies);
     const token = req.cookies.accessToken || req.cookies.tokens.accessToken;
-    console.log("token:", token);
+    // console.log("token:", token);
     if (!token) {
-      console.log("Login first to access this page!");
+      // console.log("Login first to access this page!");
       throw new ApiError(401, "Login first to access this page!");
     }
 

@@ -18,8 +18,6 @@ const userSchema = new mongoose.Schema(
     refreshToken: { type: String },
     otp: { type: String, select: false },
     otpExpires: { type: Date, select: false },
-    wishlist: [{ type: Object }],
-    cart: [{ type: Object }],
     myCoins: [
       {
         coinId: {
@@ -102,22 +100,29 @@ userSchema.methods.generateOtp = function () {
   }
 };
 
-// Add to Wishlist
-userSchema.methods.addToWishlist = async function (product) {
-  if (!this.wishlist.includes(product)) {
-    this.wishlist.push(product);
+// Add to Watchlist
+userSchema.methods.addToWatchlist = async function (coin) {
+  const existingCoin = this.watchlists.find(
+    (coin) => coin.watchlist_coinId === coin.watchlist_coinId
+  );
+  if (!existingCoin) {
+    this.watchlists.push(coin);
     await this.save();
+  } else {
+    throw new Error("Coin already exists in watchlist");
   }
 };
 
-// Remove from Wishlist
-userSchema.methods.removeFromWishlist = async function (productId) {
+// Remove from Watchlist
+userSchema.methods.removeFromWatchlist = async function (coinName) {
   try {
-    this.wishlist = this.wishlist.filter((product) => product.id !== productId);
+    this.watchlists = this.watchlists.filter(
+      (coin) => coin.watchlist_name !== coinName
+    );
     await this.save();
-    return this.wishlist;
+    return this.watchlists;
   } catch (error) {
-    throw new Error("Failed to remove product from wishlist");
+    throw new Error("Failed to remove coin from watchlists");
   }
 };
 

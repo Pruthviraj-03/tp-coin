@@ -5,66 +5,40 @@ import NavBar from "../Components/NavBar";
 import { BsTrash } from "react-icons/bs";
 import ShoppingCart from "../Images/ShoppingCart.png";
 import Spinner from "../Components/Spinner";
+import { useWatchlist } from "../Context/WatchlistContext";
+import axios from "axios";
 
 const Watchlist = () => {
+  const {
+    watchlistItems,
+    setWatchlistItems,
+    removeFromWatchlist,
+    removeAllWatchlist,
+  } = useWatchlist();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [coin, setCoin] = useState([]);
-
-  const getPortfolioData = async () => {
-    try {
-      setLoading(true);
-      // Simulating an API call with dummy data
-      const dummyData = [
-        {
-          watchlist_coinId: "bitcoin",
-          watchlist_image: "https://via.placeholder.com/50",
-          watchlist_symbol: "BTC",
-          watchlist_name: "Bitcoin",
-        },
-        {
-          watchlist_coinId: "ethereum",
-          watchlist_image: "https://via.placeholder.com/50",
-          watchlist_symbol: "ETH",
-          watchlist_name: "Ethereum",
-        },
-      ];
-      setCoin(dummyData);
-      setLoading(false);
-    } catch (error) {
-      navigate("/login");
-      return toast.warning("Login to access a watchlist!", {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 3000,
-      });
-    }
-  };
 
   useEffect(() => {
-    getPortfolioData();
-  }, []);
+    const fetchUserWatchlist = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v3/getWatchlist",
+          { withCredentials: true }
+        );
+        const { userWatchlist } = response.data.data;
+        setWatchlistItems(userWatchlist);
+      } catch (error) {
+        navigate("/login");
+        console.error("Failed to fetch user wishlist:", error);
+      }
+    };
 
-  const emptyWatchlist = async () => {
-    try {
-      // Simulate clearing the watchlist
-      setCoin([]);
-      toast.success("Watchlist is empty now!", {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 3000,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    fetchUserWatchlist();
+  }, [setWatchlistItems]);
 
-  const removeCoinFromWatchlist = (id) => {
-    setCoin((prevCoins) =>
-      prevCoins.filter((coin) => coin.watchlist_coinId !== id)
-    );
-    toast.success("Coin removed from watchlist!", {
-      position: toast.POSITION.TOP_CENTER,
-      autoClose: 3000,
-    });
+  const removeCoinFromWatchlist = (coinName) => {
+    removeFromWatchlist(coinName);
+    alert("Product removed from the wishlist.");
   };
 
   return (
@@ -95,7 +69,7 @@ const Watchlist = () => {
                             className="mobile:text-sm mobile:px-0 px-6 py-3 text-left text-xl font-bold text-gray-700 uppercase tracking-wider"
                           >
                             <button
-                              onClick={emptyWatchlist}
+                              onClick={removeAllWatchlist}
                               className="bg-red-700 text-white px-2 py-1 rounded-lg shadow-md text-xs"
                             >
                               Remove All
@@ -108,13 +82,7 @@ const Watchlist = () => {
                         {loading ? (
                           <Spinner />
                         ) : (
-                          coin.map((curElem, id) => {
-                            const {
-                              watchlist_coinId,
-                              watchlist_image,
-                              watchlist_symbol,
-                              watchlist_name,
-                            } = curElem;
+                          watchlistItems.map((curElem, id) => {
                             return (
                               <tr key={id}>
                                 <td
@@ -124,29 +92,33 @@ const Watchlist = () => {
                                   <div
                                     className="flex items-center cursor-pointer"
                                     onClick={() =>
-                                      navigate(`/coins/${watchlist_coinId}`)
+                                      navigate(
+                                        `/coins/${curElem.watchlist_coinId}`
+                                      )
                                     }
                                   >
                                     <div className="flex-shrink-0 h-10 w-10">
                                       <img
                                         className="h-10 w-10 rounded-full"
-                                        src={watchlist_image}
+                                        src={curElem.watchlist_image}
                                         alt="crypto icon"
                                       />
                                     </div>
                                     <div className="ml-4 flex gap-4 mobile:flex-col mobile:gap-2">
                                       <div className="mobile:text-sm text-lg font-bold text-gray-900 uppercase">
-                                        {watchlist_symbol}
+                                        {curElem.watchlist_symbol}
                                       </div>
                                       <div className="mobile:text-sm text-lg text-gray-500">
-                                        {watchlist_name}
+                                        {curElem.watchlist_name}
                                       </div>
                                     </div>
                                   </div>
 
                                   <div
                                     onClick={() =>
-                                      removeCoinFromWatchlist(watchlist_coinId)
+                                      removeCoinFromWatchlist(
+                                        curElem.watchlist_name
+                                      )
                                     }
                                   >
                                     <button className="text-red-700 text-3xl font-bold rounded-lg p-2 mobile:pl-2 mobile:px-0">

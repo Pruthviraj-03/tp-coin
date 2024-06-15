@@ -3,25 +3,52 @@ import { ApiResponse } from "../utils/ApiResponse.utils.js";
 import { asyncHandler } from "../utils/AsyncHandler.utils.js";
 import { User } from "../models/user.model.js";
 
+const getWatchlist = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId).populate("watchlists");
+
+    if (!user) {
+      throw new ApiError(401, "User not found");
+    }
+
+    const userWatchlist = user.watchlists;
+
+    res.json(
+      new ApiResponse(
+        200,
+        { userWatchlist },
+        "Get watchlist data successfully!"
+      )
+    );
+  } catch (error) {
+    throw new ApiError(500, error.message || "Failed to get watchlist data!");
+  }
+});
+
 const addToWatchlist = asyncHandler(async (req, res) => {
   try {
-    const {
-      watchlist_coinId,
-      watchlist_image,
-      watchlist_symbol,
-      watchlist_name,
-    } = req.body;
+    const { coin } = req.body;
 
-    const watchlistCoins = {
-      watchlist_coinId,
-      watchlist_image,
-      watchlist_symbol,
-      watchlist_name,
+    if (!coin) {
+      throw new Error("Coin data is missing in the request body");
+    }
+
+    const watchlistCoin = {
+      watchlist_coinId: coin.watchlist_coinId,
+      watchlist_image: coin.watchlist_image,
+      watchlist_symbol: coin.watchlist_symbol,
+      watchlist_name: coin.watchlist_name,
     };
 
     const loginUser = await User.findById(req.user.id);
-    loginUser.watchlists.unshift(watchlistCoins);
-    await loginUser.save();
+
+    if (!loginUser) {
+      throw new ApiError(404, "User not found!");
+    }
+
+    await loginUser.addToWatchlist(watchlistCoin);
+
     res.json(
       new ApiResponse(
         200,
@@ -30,79 +57,33 @@ const addToWatchlist = asyncHandler(async (req, res) => {
       )
     );
   } catch (error) {
-    throw new ApiError(
-      401,
-      error?.message || "Failed to added coins in watchlist!"
-    );
-  }
-});
-
-const getWatchlist = asyncHandler(async (req, res) => {
-  try {
-    const userProfile = await User.findById(req.user.id);
-
-    userProfile.passwords = undefined;
-    res.json(
-      new ApiResponse(200, { userProfile }, "Get watchlist data successfully!")
-    );
-  } catch (error) {
-    throw new ApiError(401, error?.message || "Failed to get watchlist data!");
-  }
-});
-
-const removeAllWatchlist = asyncHandler(async (req, res) => {
-  try {
-    const loginUser = await User.findById(req.user.id);
-
-    await User.findOneAndUpdate(
-      {
-        email: loginUser.email,
-      },
-      {
-        watchlists: [],
-      }
-    );
-    res.json(new ApiResponse(200, { loginUser }, "Watchlist is empty now!"));
-  } catch (error) {
-    throw new ApiError(
-      401,
-      error?.message || "Failed to remove watchlist data!"
-    );
+    res
+      .status(401)
+      .json(
+        new ApiError(401, error.message || "Failed to add coin to watchlist!")
+      );
   }
 });
 
 const removeFromWatchlist = asyncHandler(async (req, res) => {
   try {
-    const {
-      watchlist_coinId,
-      watchlist_image,
-      watchlist_symbol,
-      watchlist_name,
-    } = req.body;
-    const loginUser = await User.findById(req.user.id);
+    const userId = req.user.id;
 
-    const watchlistCoins = {
-      watchlist_coinId,
-      watchlist_image,
-      watchlist_symbol,
-      watchlist_name,
-    };
+    const { coinName } = req.params;
 
-    await User.findOneAndUpdate(
-      {
-        email: loginUser.email,
-      },
-      {
-        $pull: {
-          watchlists: watchlistCoins,
-        },
-      }
-    );
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new ApiError(401, "User not found");
+    }
+
+    const updatedWatchlists = await user.removeFromWatchlist(coinName);
+
     res.json(
       new ApiResponse(
         200,
-        { loginUser },
-        "coin removed from watchlist, please check watchlist!"
+        { watchlists: updatedWatchlists },
+        "Coin removed from watchlist, please check watchlist!"
       )
     );
   } catch (error) {
@@ -113,9 +94,31 @@ const removeFromWatchlist = asyncHandler(async (req, res) => {
   }
 });
 
+const removeAllWatchlist = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    user.watchlists = [];
+    await user.save();
+
+    res.json(
+      new ApiResponse(
+        200,
+        { watchlists: user.watchlists },
+        "Watchlist is empty now!"
+      )
+    );
+  } catch (error) {
+    throw new ApiError(
+      401,
+      error?.message || "Failed to remove watchlist data!"
+    );
+  }
+});
+
 export {
   addToWatchlist,
   getWatchlist,
-  removeAllWatchlist,
   removeFromWatchlist,
+  removeAllWatchlist,
 };

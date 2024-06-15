@@ -9,7 +9,8 @@ import NavBar from "../Components/NavBar";
 import { useNavigate } from "react-router-dom";
 import { createContext } from "react";
 import Spinner from "../Components/Spinner";
-import Cookies from "universal-cookie";
+// import Cookies from "universal-cookie";
+import { useWatchlist } from "../Context/WatchlistContext";
 
 //razorpay script
 function loadScript(src) {
@@ -32,8 +33,9 @@ export const CartContext = createContext();
 
 //main function
 const CryptoDetails = () => {
+  const { addToWatchlist, watchlistItems } = useWatchlist();
   const { id } = useParams();
-  const cookies = new Cookies();
+  // const cookies = new Cookies();
   const navigate = useNavigate();
   const [coin, setCoin] = useState();
   const [loading, setLoading] = useState(false);
@@ -41,6 +43,26 @@ const CryptoDetails = () => {
   const [paymentToken, setPaymentToken] = useState("");
   const [watchlistCoinArr, setWatchlistCoinArr] = useState([]);
   const [portfolioCoinArr, setPortfolioCoinArr] = useState([]);
+
+  const addWatchlist = () => {
+    const watchListRes = watchlistItems.find(
+      (e) => e.watchlist_name === coin?.name
+    );
+
+    if (watchListRes) {
+      window.alert("Coin already added into watchlist !");
+    } else {
+      const coinData = {
+        watchlist_coinId: coin?.id,
+        watchlist_image: coin?.image.large,
+        watchlist_symbol: coin?.symbol,
+        watchlist_name: coin?.name,
+      };
+      addToWatchlist(coinData);
+      window.alert("Coin added into watchlist !");
+      navigate("/watchlist");
+    }
+  };
 
   //increment and decrement
   const [counter, setCounter] = useState(1);
@@ -67,48 +89,48 @@ const CryptoDetails = () => {
   }, []);
 
   // getting coins data from user's portfolio
-  let newPortfolioCoinArr = [];
-  const getPortfolioData = async () => {
-    const res = await axios.get("/portfolio");
-    if (res) {
-      for (
-        let index = 0;
-        index < res.data.userProfile.myCoins.length;
-        index++
-      ) {
-        newPortfolioCoinArr.push({
-          name: res.data.userProfile.myCoins[index]?.name,
-          quantity: res.data.userProfile.myCoins[index]?.quantity,
-        });
-      }
-      setPortfolioCoinArr(newPortfolioCoinArr);
-    }
-  };
+  // let newPortfolioCoinArr = [];
+  // const getPortfolioData = async () => {
+  //   const res = await axios.get("/portfolio");
+  //   if (res) {
+  //     for (
+  //       let index = 0;
+  //       index < res.data.userProfile.myCoins.length;
+  //       index++
+  //     ) {
+  //       newPortfolioCoinArr.push({
+  //         name: res.data.userProfile.myCoins[index]?.name,
+  //         quantity: res.data.userProfile.myCoins[index]?.quantity,
+  //       });
+  //     }
+  //     setPortfolioCoinArr(newPortfolioCoinArr);
+  //   }
+  // };
 
-  // watchlist data
-  let newWatchlistCoinArr = [];
-  const getWatchlistData = async () => {
-    const res = await axios.get("/watchlist");
-    if (res) {
-      for (
-        let index = 0;
-        index < res.data.userProfile.watchlists.length;
-        index++
-      ) {
-        newWatchlistCoinArr.push(
-          res.data.userProfile.watchlists[index]?.watchlist_name
-        );
-      }
-      setWatchlistCoinArr(newWatchlistCoinArr);
-    }
-  };
+  // // watchlist data
+  // let newWatchlistCoinArr = [];
+  // const getWatchlistData = async () => {
+  //   const res = await axios.get("/watchlist");
+  //   if (res) {
+  //     for (
+  //       let index = 0;
+  //       index < res.data.userProfile.watchlists.length;
+  //       index++
+  //     ) {
+  //       newWatchlistCoinArr.push(
+  //         res.data.userProfile.watchlists[index]?.watchlist_name
+  //       );
+  //     }
+  //     setWatchlistCoinArr(newWatchlistCoinArr);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (cookies.get("isLogin")) {
-      getPortfolioData();
-      getWatchlistData();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (cookies.get("isLogin")) {
+  //     getPortfolioData();
+  //     getWatchlistData();
+  //   }
+  // }, []);
 
   //payment
   const displayRazorPay = async () => {
@@ -258,47 +280,47 @@ const CryptoDetails = () => {
   };
 
   //add to watchlist process
-  const addWatchlist = async () => {
-    const watchListRes = watchlistCoinArr.find((e) => e === coin?.name);
-    if (watchListRes) {
-      // toast.warning(`${coin?.name} already present in watchlist!`, {
-      //   position: toast.POSITION.TOP_CENTER,
-      //   autoClose: 3000,
-      // });
-    } else {
-      const coinData = {
-        watchlist_coinId: coin?.id,
-        watchlist_image: coin?.image.large,
-        watchlist_symbol: coin?.symbol,
-        watchlist_name: coin?.name,
-      };
+  // const addWatchlist = async () => {
+  //   const watchListRes = watchlistCoinArr.find((e) => e === coin?.name);
+  //   if (watchListRes) {
+  //     // toast.warning(`${coin?.name} already present in watchlist!`, {
+  //     //   position: toast.POSITION.TOP_CENTER,
+  //     //   autoClose: 3000,
+  //     // });
+  //   } else {
+  //     const coinData = {
+  //       watchlist_coinId: coin?.id,
+  //       watchlist_image: coin?.image.large,
+  //       watchlist_symbol: coin?.symbol,
+  //       watchlist_name: coin?.name,
+  //     };
 
-      try {
-        const res = await axios.post("/add/coins/watchlist", coinData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+  //     try {
+  //       const res = await axios.post("/add/coins/watchlist", coinData, {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       });
 
-        const data = res.data;
+  //       const data = res.data;
 
-        if (data) {
-          navigate("/");
-          // toast.success(`${coin?.name} added to watchlist!`, {
-          //   position: toast.POSITION.TOP_CENTER,
-          //   autoClose: 3000,
-          // });
-        }
-      } catch (error) {
-        console.log(error);
-        navigate("/login");
-        // return toast.warning(`Login to Add a ${coin?.name} to WatchList!`, {
-        //   position: toast.POSITION.TOP_CENTER,
-        //   autoClose: 3000,
-        // });
-      }
-    }
-  };
+  //       if (data) {
+  //         navigate("/");
+  //         // toast.success(`${coin?.name} added to watchlist!`, {
+  //         //   position: toast.POSITION.TOP_CENTER,
+  //         //   autoClose: 3000,
+  //         // });
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //       navigate("/login");
+  //       // return toast.warning(`Login to Add a ${coin?.name} to WatchList!`, {
+  //       //   position: toast.POSITION.TOP_CENTER,
+  //       //   autoClose: 3000,
+  //       // });
+  //     }
+  //   }
+  // };
 
   return (
     <>
