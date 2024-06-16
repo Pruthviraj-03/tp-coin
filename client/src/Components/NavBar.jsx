@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-// import { CryptoState } from "../Context/CryptoContext.js";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import cLogo from "../Images/icons8-cryptocurrency-64.png";
 import cImg from "../Images/FinanceappMonochromatic.png";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -9,10 +8,46 @@ import { MdFavoriteBorder } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { FiEye } from "react-icons/fi";
 import { SiApacheecharts } from "react-icons/si";
+import { RiMoneyCnyCircleLine } from "react-icons/ri";
+import { BsNewspaper } from "react-icons/bs";
+import axios from "axios";
+import { CryptoState } from "../Context/CryptoContext";
 
 const NavBar = () => {
-  // const { currency, setCurrency } = CryptoState();
+  const navigate = useNavigate();
+  const { currency, setCurrency } = CryptoState();
   const [menu, setMenu] = useState(false);
+  const [userData, setUserData] = useState(null);
+
+  const getUser = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/v1/users/login/success",
+        { withCredentials: true }
+      );
+      console.log("User data response:", response.data);
+      setUserData(response.data.data.user);
+    } catch (error) {
+      console.log("error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await axios.get("http://localhost:8000/api/v1/users/logout", {
+        withCredentials: true,
+      });
+      window.alert("User logout success");
+      setUserData(null);
+      navigate("/login");
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    }
+  };
 
   return (
     <>
@@ -30,11 +65,38 @@ const NavBar = () => {
         </div>
 
         <div className="flex items-center text-lg absolute right-10 mobile:right-0 mobile:relative mobile:text-sm">
-          <div className="mr-5">
-            <button className="px-1 py-2 font-bold text-gray-800 hover:underline uppercase text-sm">
-              <Link to="/login">Log In</Link>
-            </button>
-          </div>
+          {userData ? (
+            <div className="mr-5">
+              <button
+                className="px-1 py-2 font-bold text-gray-800 hover:underline uppercase text-sm"
+                onClick={handleLogout}
+              >
+                Log Out
+              </button>
+            </div>
+          ) : (
+            <div className="mr-5">
+              <button className="px-1 py-2 font-bold text-gray-800 hover:underline uppercase text-sm">
+                <Link to="/login">Log In</Link>
+              </button>
+            </div>
+          )}
+
+          {userData ? (
+            <select
+              name="currencies"
+              className="bg-gray-400 outline-none font-semibold cursor-pointer mr-5"
+              value={currency}
+              onChange={(e) => {
+                setCurrency(e.target.value);
+              }}
+            >
+              <option value="INR">INR</option>
+              <option value="USD">USD</option>
+            </select>
+          ) : (
+            ""
+          )}
         </div>
 
         <button
@@ -83,6 +145,20 @@ const NavBar = () => {
                   <FiEye />
                 </span>
                 <Link to="/watchlist">WatchList</Link>
+              </div>
+
+              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
+                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
+                  <RiMoneyCnyCircleLine />
+                </span>
+                <Link to="/exchanges">Exchanges</Link>
+              </div>
+
+              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
+                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
+                  <BsNewspaper />
+                </span>
+                <Link to="/news">News</Link>
               </div>
 
               <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">

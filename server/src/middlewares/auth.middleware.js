@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 
 const authMiddleWare = asyncHandler(async (req, res, next) => {
   try {
-    // console.log("cookie:", req.cookies);
+    console.log("cookie:", req.cookies);
     const token = req.cookies.accessToken || req.cookies.tokens.accessToken;
     // console.log("token:", token);
     if (!token) {

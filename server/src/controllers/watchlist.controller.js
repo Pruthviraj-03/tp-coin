@@ -41,18 +41,18 @@ const addToWatchlist = asyncHandler(async (req, res) => {
       watchlist_name: coin.watchlist_name,
     };
 
-    const loginUser = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id);
 
-    if (!loginUser) {
+    if (user) {
       throw new ApiError(404, "User not found!");
     }
 
-    await loginUser.addToWatchlist(watchlistCoin);
+    await user.addToWatchlist(watchlistCoin);
 
     res.json(
       new ApiResponse(
         200,
-        { loginUser },
+        { user },
         "Coin added to watchlist, please check watchlist!"
       )
     );

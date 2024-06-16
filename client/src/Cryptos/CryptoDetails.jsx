@@ -5,12 +5,12 @@ import { SingleCoin } from "../Config/Api";
 import { CryptoState } from "../Context/CryptoContext";
 // import ChartCrypto from "./ChartCrypto";
 import NavBar from "../Components/NavBar";
-// import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { createContext } from "react";
 import Spinner from "../Components/Spinner";
 // import Cookies from "universal-cookie";
 import { useWatchlist } from "../Context/WatchlistContext";
+import { usePortfolio } from "../Context//PortfolioContext";
 
 //razorpay script
 function loadScript(src) {
@@ -34,6 +34,7 @@ export const CartContext = createContext();
 //main function
 const CryptoDetails = () => {
   const { addToWatchlist, watchlistItems } = useWatchlist();
+  const { buyCoin } = usePortfolio;
   const { id } = useParams();
   // const cookies = new Cookies();
   const navigate = useNavigate();
@@ -133,191 +134,205 @@ const CryptoDetails = () => {
   // }, []);
 
   //payment
-  const displayRazorPay = async () => {
+  const handlePayment = async (e) => {
+    e.preventDefault();
+
+    const amountInRupees = coin.market_data.current_price.inr;
+    const amountInPaise = Math.round(amountInRupees * 100);
+    const currency = "INR";
+    const receiptId = "0123456789";
+
+    console.log("amount in rupees:", amountInRupees);
+    console.log("amount in paise:", amountInPaise);
+    console.log("currency:", currency);
+    console.log("receiptId:", receiptId);
+
+    if (!amountInPaise) {
+      window.alert("Amount is not defined!");
+      return;
+    }
+
     try {
-      const res = await loadScript(
-        "https://checkout.razorpay.com/v1/checkout.js"
+      const response = await axios.post(
+        "http://localhost:8000/api/v2/razorpay/payment",
+        { amount: amountInPaise, currency, receipt: receiptId }
       );
-
-      // if (!res) {
-      //   toast.warning("Payment failed, check your connection!", {
-      //     position: toast.POSITION.TOP_CENTER,
-      //     autoClose: 3000,
-      //   });
-      // }
-
-      const response = await axios.post("/razorpay/payment", {
-        amount: coin?.market_data.current_price.inr * 100 * counter,
-      });
-
-      const convertRes = await response.data;
-      const { order } = convertRes;
+      const order = response.data.data.order;
+      console.log("order:", order);
 
       const options = {
-        key: __dev__ ? "rzp_test_nvbgBY8uNQpEwZ" : "Production key here",
-        name: "TP-Coin",
-        description: "Transaction for buying coins.",
-        image: "https://example.com/your_logo",
-        currency: "INR",
-        amount: coin?.market_data.current_price.inr * 100 * counter,
+        key: process.env.REACT_APP_RAZORPAY_API_KEY,
+        amount: amountInPaise,
+        currency: order.currency,
+        name: "Tp-Coin",
+        description: "Transaction for buying products.",
         order_id: order.id,
-
         handler: async function (response) {
-          // console.log("frontend paymentId", response.razorpay_payment_id);
-          // console.log("frontend order_id", response.razorpay_order_id);
-          // console.log("frontend signature", response.razorpay_signature);
+          try {
+            alert(`Payment ID: ${response.razorpay_payment_id}`);
+            alert(`Order ID: ${response.razorpay_order_id}`);
+            window.alert("Payment success");
 
-          setPaymentToken(response.razorpay_payment_id);
-          localStorage.setItem("isBuyCoin", "true");
-          localStorage.setItem("quantity", counter);
-
-          window.location.reload(false);
-          // toast.success("Payment successful!", {
-          //   position: toast.POSITION.TOP_CENTER,
-          //   autoClose: 3000,
-          // });
+            await buyCoin(coin || []);
+            navigate("/portfolio");
+          } catch (error) {
+            console.error("Error adding to order:", error);
+            window.alert("Failed to add products to order.");
+          }
         },
-
-        //remove this seaction while hosting
-        // prefill: {
-        //   name: "rohit",
-        //   email: "test.rohit@example.com",
-        //   contact: "9898989898",
-        // },
+        prefill: {
+          name: "raj",
+          email: "test.raj@example.com",
+          contact: "9898989898",
+        },
         theme: {
-          color: "#3B3B3B",
+          color: "#3399cc",
         },
       };
 
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
+      const payment = new window.Razorpay(options);
+      payment.open();
     } catch (error) {
-      navigate("/login");
-      // return toast.warning("Login to make a Payment!", {
-      //   position: toast.POSITION.TOP_CENTER,
-      //   autoClose: 3000,
-      // });
+      console.error("Error during payment process:", error);
     }
   };
+
+  // const displayRazorPay = async () => {
+  //   try {
+  //     const res = await loadScript(
+  //       "https://checkout.razorpay.com/v1/checkout.js"
+  //     );
+
+  //     if (!res) {
+  //       alert("Payment failed, check your connection!");
+  //       // toast.warning("Payment failed, check your connection!", {
+  //       //   position: toast.POSITION.TOP_CENTER,
+  //       //   autoClose: 3000,
+  //       // });
+  //     }
+
+  //     const response = await axios.post("/razorpay/payment", {
+  //       amount: coin?.market_data.current_price.inr * 100 * counter,
+  //     });
+
+  //     const convertRes = await response.data;
+  //     const { order } = convertRes;
+
+  //     const options = {
+  //       key: __dev__ ? "rzp_test_nvbgBY8uNQpEwZ" : "Production key here",
+  //       name: "TP-Coin",
+  //       description: "Transaction for buying coins.",
+  //       image: "https://example.com/your_logo",
+  //       currency: "INR",
+  //       amount: coin?.market_data.current_price.inr * 100 * counter,
+  //       order_id: order.id,
+
+  //       handler: async function (response) {
+  //         // console.log("frontend paymentId", response.razorpay_payment_id);
+  //         // console.log("frontend order_id", response.razorpay_order_id);
+  //         // console.log("frontend signature", response.razorpay_signature);
+
+  //         setPaymentToken(response.razorpay_payment_id);
+  //         localStorage.setItem("isBuyCoin", "true");
+  //         localStorage.setItem("quantity", counter);
+
+  //         window.location.reload(false);
+  //         alert("Payment successful!");
+  //         // toast.success("Payment successful!", {
+  //         //   position: toast.POSITION.TOP_CENTER,
+  //         //   autoClose: 3000,
+  //         // });
+  //       },
+
+  //       //remove this seaction while hosting
+  //       prefill: {
+  //         name: "rohit",
+  //         email: "test.rohit@example.com",
+  //         contact: "9898989898",
+  //       },
+  //       theme: {
+  //         color: "#3B3B3B",
+  //       },
+  //     };
+
+  //     const paymentObject = new window.Razorpay(options);
+  //     paymentObject.open();
+  //   } catch (error) {
+  //     navigate("/login");
+  //     // return toast.warning("Login to make a Payment!", {
+  //     //   position: toast.POSITION.TOP_CENTER,
+  //     //   autoClose: 3000,
+  //     // });
+  //   }
+  // };
 
   // let order_uniqueId = (Math.random() + 1).toString(36).substring(7);
 
   //buy coin process
-  const buyCoin = async () => {
-    const portfolioRes = portfolioCoinArr.find((e) => e.name === coin?.name);
+  // const buyCoin = async () => {
+  //   const portfolioRes = portfolioCoinArr.find((e) => e.name === coin?.name);
 
-    if (portfolioRes) {
-      let myCoins = {
-        coinId: coin?.id,
-        image: coin?.image.large,
-        symbol: coin?.symbol,
-        name: coin?.name,
-        // quantity: portfolioRes?.quantity + counter,
-        quantity:
-          portfolioRes?.quantity + parseInt(localStorage.getItem("quantity")),
-        paymentToken: paymentToken,
-      };
-
-      try {
-        const res = await axios.post(
-          "/buy/coins/update",
-          { myCoins: myCoins },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const data = res.data;
-        if (data) {
-          localStorage.removeItem("isBuyCoin");
-          localStorage.removeItem("quantity");
-          navigate("/");
-          // toast.success(`${coin?.name} buy successfully!`, {
-          //   position: toast.POSITION.TOP_CENTER,
-          //   autoClose: 3000,
-          // });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      const myCoins = {
-        coinId: coin?.id,
-        image: coin?.image.large,
-        symbol: coin?.symbol,
-        name: coin?.name,
-        quantity: localStorage.getItem("quantity"),
-        paymentToken: paymentToken,
-      };
-
-      try {
-        const res = await axios.post(
-          "/buy/coins",
-          { myCoins: myCoins },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const data = res.data;
-        if (data) {
-          localStorage.removeItem("isBuyCoin");
-          localStorage.removeItem("quantity");
-          navigate("/");
-          // toast.success(`${coin?.name} buy successfully!`, {
-          //   position: toast.POSITION.TOP_CENTER,
-          //   autoClose: 3000,
-          // });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
-  //add to watchlist process
-  // const addWatchlist = async () => {
-  //   const watchListRes = watchlistCoinArr.find((e) => e === coin?.name);
-  //   if (watchListRes) {
-  //     // toast.warning(`${coin?.name} already present in watchlist!`, {
-  //     //   position: toast.POSITION.TOP_CENTER,
-  //     //   autoClose: 3000,
-  //     // });
-  //   } else {
-  //     const coinData = {
-  //       watchlist_coinId: coin?.id,
-  //       watchlist_image: coin?.image.large,
-  //       watchlist_symbol: coin?.symbol,
-  //       watchlist_name: coin?.name,
+  //   if (portfolioRes) {
+  //     let myCoins = {
+  //       coinId: coin?.id,
+  //       image: coin?.image.large,
+  //       symbol: coin?.symbol,
+  //       name: coin?.name,
+  //       // quantity: portfolioRes?.quantity + counter,
+  //       quantity:
+  //         portfolioRes?.quantity + parseInt(localStorage.getItem("quantity")),
+  //       paymentToken: paymentToken,
   //     };
 
   //     try {
-  //       const res = await axios.post("/add/coins/watchlist", coinData, {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       });
+  //       const res = await axios.post(
+  //         "/buy/coins/update",
+  //         { myCoins: myCoins },
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
 
   //       const data = res.data;
-
   //       if (data) {
+  //         localStorage.removeItem("isBuyCoin");
+  //         localStorage.removeItem("quantity");
   //         navigate("/");
-  //         // toast.success(`${coin?.name} added to watchlist!`, {
-  //         //   position: toast.POSITION.TOP_CENTER,
-  //         //   autoClose: 3000,
-  //         // });
   //       }
   //     } catch (error) {
   //       console.log(error);
-  //       navigate("/login");
-  //       // return toast.warning(`Login to Add a ${coin?.name} to WatchList!`, {
-  //       //   position: toast.POSITION.TOP_CENTER,
-  //       //   autoClose: 3000,
-  //       // });
+  //     }
+  //   } else {
+  //     const myCoins = {
+  //       coinId: coin?.id,
+  //       image: coin?.image.large,
+  //       symbol: coin?.symbol,
+  //       name: coin?.name,
+  //       quantity: localStorage.getItem("quantity"),
+  //       paymentToken: paymentToken,
+  //     };
+
+  //     try {
+  //       const res = await axios.post(
+  //         "/buy/coins",
+  //         { myCoins: myCoins },
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+
+  //       const data = res.data;
+  //       if (data) {
+  //         localStorage.removeItem("isBuyCoin");
+  //         localStorage.removeItem("quantity");
+  //         navigate("/");
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
   //     }
   //   }
   // };
@@ -460,7 +475,7 @@ const CryptoDetails = () => {
               </button>
             ) : (
               <button
-                onClick={displayRazorPay}
+                onClick={handlePayment}
                 className="font-bold text-lg w-52 rounded-lg bg-blue-400 border-2 border-indigo-900 mobile:rounded-none 
                 mobile:w-1/2 mobile:px-0 mobile:border-none hover:bg-blue-600 hover:text-white"
               >

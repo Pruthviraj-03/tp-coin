@@ -20,6 +20,7 @@ const razorpayPayment = asyncHandler(async (req, res) => {
     }
 
     const { amount, currency, receipt } = req.body;
+    console.log("req.body:", req.body);
 
     const options = {
       amount: amount,

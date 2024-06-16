@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProfilePng from "../Images/profile.png";
 import NavBar from "../Components/NavBar";
 
 const Profile = () => {
   const [userData, setUserData] = useState({});
+  const navigate = useNavigate();
 
   const getUser = async () => {
     try {
@@ -15,6 +16,7 @@ const Profile = () => {
       );
       setUserData(response.data.data.user);
     } catch (error) {
+      navigate("/login");
       console.log("error fetching user data:", error);
     }
   };

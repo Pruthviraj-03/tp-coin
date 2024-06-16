@@ -127,11 +127,9 @@ userSchema.methods.removeFromWatchlist = async function (coinName) {
 };
 
 // Add to cart
-userSchema.methods.addToCart = async function (product) {
-  if (!this.cart.includes(product)) {
-    this.cart.push(product);
-    await this.save();
-  }
+userSchema.methods.buyCoin = async function (coin) {
+  this.myCoins.push(coin);
+  await this.save();
 };
 
 // Remove from cart

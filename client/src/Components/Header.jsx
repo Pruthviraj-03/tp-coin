@@ -1,9 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import TrendCarsoule from "./TrendCarsoule";
 import { useNavigate } from "react-router";
+import axios from "axios";
 
 const Header = () => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+
+  const getUser = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/v1/users/login/success",
+        { withCredentials: true }
+      );
+      console.log("User data response:", response.data);
+      setUserData(response.data.data.user);
+    } catch (error) {
+      console.log("error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <div className="select-none relative top-28 px-52 mb-20 bg-gray-200 mobile:px-1 tablet:px-10 laptop:px-32">
@@ -17,12 +36,16 @@ const Header = () => {
             Invest in Crypto-Currency in One-Click for a better future.
           </p>
           <div>
-            <button
-              className="my-5 text-2xl font-semibold bg-gray-800 hover:bg-black text-gray-50 rounded-md px-5 py-2 mobile:text-xl"
-              onClick={() => navigate("/login")}
-            >
-              Register Now
-            </button>
+            {userData ? (
+              ""
+            ) : (
+              <button
+                className="my-5 text-2xl font-semibold bg-gray-800 hover:bg-black text-gray-50 rounded-md px-5 py-2 mobile:text-xl"
+                onClick={() => navigate("/login")}
+              >
+                Register Now
+              </button>
+            )}
           </div>
         </div>
         <div className="mt-12 mobile:mt-2">

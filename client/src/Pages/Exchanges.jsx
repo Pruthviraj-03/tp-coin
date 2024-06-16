@@ -7,29 +7,33 @@ import NavBar from "../Components/NavBar";
 const Exchanges = () => {
   const [exchanges, setExchanges] = useState([]);
 
-  const getData = async () => {
-    try {
-      const setHeader = {
-        headers: {
-          "x-rapidapi-host": "coinranking1.p.rapidapi.com",
-          "x-rapidapi-key":
-            "3bf8ad2345msh9f75760d2fe9a1dp1ffbb3jsnc1cec33b9615",
-        },
-      };
-
-      const res = await axios.get(
-        // "https://coinranking1.p.rapidapi.com/coin/Qwsogvtv82FCd/exchanges",
-        setHeader
-      );
-
-      const responce = res.data.data.exchanges;
-      setExchanges(responce);
-    } catch (err) {
-      console.log(err);
-    }
-  };
   useEffect(() => {
-    getData();
+    const fetchExchanges = async () => {
+      try {
+        const options = {
+          method: "GET",
+          url: "https://coingecko.p.rapidapi.com/coins/markets",
+          params: {
+            vs_currency: "usd",
+            page: "1",
+            per_page: "100",
+            order: "market_cap_desc",
+          },
+          headers: {
+            "X-RapidAPI-Key":
+              "801cfd6090msh43ba5a116c51f0ep1004f8jsna6de03eee58b",
+            "X-RapidAPI-Host": "coingecko.p.rapidapi.com",
+          },
+        };
+        const response = await axios.request(options);
+        setExchanges(response.data || []);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching exchanges:", error);
+      }
+    };
+
+    fetchExchanges();
   }, []);
 
   // useEffect(() => {
@@ -50,14 +54,12 @@ const Exchanges = () => {
         exchanges.map((curElem, id) => {
           const {
             name,
-            lastTickerCreatedAt,
-            marketShare,
-            numberOfMarkets,
-            rank,
-            volume,
-            websiteUrl,
-            iconUrl,
-            price,
+            last_updated,
+            current_price,
+            market_cap_rank,
+            total_volume,
+            // websiteUrl,
+            image,
           } = curElem;
 
           return (
@@ -71,7 +73,7 @@ const Exchanges = () => {
               <div className="collapse-title text-xl font-medium">
                 <div className="flex items-center gap-5 px-5 cursor-pointer">
                   <div className="w-20 h-20">
-                    <img src={iconUrl} alt="icons" />
+                    <img src={image} alt="icons" />
                   </div>
                   <p className="font-bold text-2xl uppercase pb-2">{name}</p>
                 </div>
@@ -79,30 +81,26 @@ const Exchanges = () => {
 
               <div className="collapse-content">
                 <div className="flex justify-evenly items-center flex-wrap mobile:flex-col mobile:items-start mobile:px-5 mobile:pt-5">
-                  <p className="font-semibold">Rank : {rank}</p>
-                  {/* <p className="font-semibold">
+                  <p className="font-semibold">Rank : {market_cap_rank}</p>
+                  <p className="font-semibold">
                     lastTickerCreatedAt :
                     <span className="text-sm px-2 font-light">
-                      {lastTickerCreatedAt}
+                      {last_updated}
                     </span>
-                  </p> */}
+                  </p>
                   <p className="font-semibold">
                     price :
-                    <span className="text-sm px-2 font-light">{price}</span>
+                    <span className="text-sm px-2 font-light">
+                      {current_price}
+                    </span>
                   </p>
                   <p className="font-semibold">
-                    number Of Markets :
-                    <span className="text-sm px-2 font-light">
-                      {numberOfMarkets}
-                    </span>
-                  </p>
-                  {/* <p className="font-semibold">
                     volume :
                     <span className="text-sm px-2 font-light">
-                      {curElem.24hVolume}
+                      {total_volume}
                     </span>
-                  </p> */}
-                  <p className="text-xs text-blue-600 font-medium lowercase cursor-pointer">
+                  </p>
+                  {/* <p className="text-xs text-blue-600 font-medium lowercase cursor-pointer">
                     <a
                       target="_blank"
                       rel="noopener noreferrer"
@@ -110,7 +108,7 @@ const Exchanges = () => {
                     >
                       {websiteUrl}
                     </a>
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>
