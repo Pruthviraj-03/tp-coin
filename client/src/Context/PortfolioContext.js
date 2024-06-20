@@ -10,14 +10,22 @@ export const PortfolioProvider = ({ children }) => {
   const [portfolioItems, setPortfolioItems] = useState([]);
   const navigate = useNavigate();
 
-  const buyCoin = async (coin) => {
+  const buyCoin = async (coin, counter) => {
     try {
-      console.log("coin is:", coin);
+      const coinData = {
+        coinId: coin.id,
+        image: coin.image.large,
+        symbol: coin.symbol,
+        name: coin.name,
+        quantity: counter,
+      };
+
       const response = await axios.post(
         "http://localhost:8000/api/v2/buyCoins",
-        { coin: coin },
+        { coin: coinData },
         { withCredentials: true }
       );
+
       if (response.data.data.coin) {
         setPortfolioItems([...portfolioItems, response.data.data.coin]);
       } else {
@@ -29,12 +37,26 @@ export const PortfolioProvider = ({ children }) => {
     }
   };
 
+  const sellCoin = async (coinId, quantity) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/v2/sellCoins/${coinId}/${quantity}`,
+        {},
+        { withCredentials: true }
+      );
+      console.log("res", response.data);
+    } catch (error) {
+      console.error("Failed to sell the coin:", error.response);
+    }
+  };
+
   return (
     <PortfolioContext.Provider
       value={{
         portfolioItems,
         setPortfolioItems,
         buyCoin,
+        sellCoin,
       }}
     >
       {children}

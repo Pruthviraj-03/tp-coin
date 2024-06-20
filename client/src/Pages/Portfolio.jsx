@@ -1,82 +1,77 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
 import NavBar from "../Components/NavBar";
 import portfolio from "../Images/portfolio.png";
 import Spinner from "../Components/Spinner";
+import { usePortfolio } from "../Context/PortfolioContext.js";
+import axios from "axios";
 
 const Portfolio = () => {
+  const { portfolioItems, setPortfolioItems, sellCoin } = usePortfolio();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [coin, setCoin] = useState([]);
-  const [portfolioCoinArr, setPortfolioCoinArr] = useState([]);
-
-  const getPortfolioData = async () => {
-    setLoading(true);
-    try {
-      const dummyData = [
-        {
-          coinId: "bitcoin",
-          image: "https://via.placeholder.com/50",
-          symbol: "BTC",
-          name: "Bitcoin",
-          quantity: 1.5,
-        },
-        {
-          coinId: "ethereum",
-          image: "https://via.placeholder.com/50",
-          symbol: "ETH",
-          name: "Ethereum",
-          quantity: 10,
-        },
-      ];
-      setCoin(dummyData);
-      setLoading(false);
-
-      const newPortfolioCoinArr = dummyData.map((coin) => ({
-        name: coin.name,
-        quantity: coin.quantity,
-      }));
-      setPortfolioCoinArr(newPortfolioCoinArr);
-    } catch (error) {
-      navigate("/login");
-      toast.warning("Login to access a portfolio!", {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 3000,
-      });
-    }
-  };
+  const [sellQuantity, setSellQuantity] = useState(0);
 
   useEffect(() => {
-    getPortfolioData();
-  }, []);
-
-  const handleSellCoin = (curElem) => {
-    const sellQty = prompt("Enter Quantity you want to sell.", 1);
-    const portfolioRes = portfolioCoinArr.find((e) => e.name === curElem.name);
-
-    if (sellQty !== null) {
-      if (sellQty <= 0 || sellQty > portfolioRes.quantity) {
-        toast.warning("Invalid Quantity", {
-          position: toast.POSITION.TOP_CENTER,
-          autoClose: 2000,
-        });
-        return;
+    const fetchUserWatchlist = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v2/getPortfolio",
+          { withCredentials: true }
+        );
+        const { userPortfolio } = response.data.data;
+        setPortfolioItems(userPortfolio);
+      } catch (error) {
+        navigate("/login");
+        console.error("Failed to fetch user wishlist:", error);
       }
+    };
 
-      const updatedCoin = coin.map((item) =>
-        item.name === curElem.name
-          ? { ...item, quantity: item.quantity - sellQty }
-          : item
-      );
+    fetchUserWatchlist();
+  }, [setPortfolioItems]);
 
-      setCoin(updatedCoin);
-
-      toast.success("Coin sold, refund will get in 3 working days!", {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 3000,
-      });
+  const handleSellCoin = async (coinId, quantity) => {
+    if (!quantity) {
+      alert("Please enter a valid quantity to sell.");
+      return;
     }
+
+    const coin = portfolioItems.find((item) => item.coinId === coinId);
+    if (!coin) {
+      alert("Coin not found in portfolio.");
+      return;
+    }
+
+    if (quantity > coin.quantity) {
+      alert("Insufficient quantity to sell.");
+      return;
+    }
+
+    try {
+      await sellCoin(coinId, quantity);
+      alert(`${quantity} coins of ${coin.name} sold successfully!`);
+
+      const updatedPortfolio = await axios.get(
+        "http://localhost:8000/api/v2/getPortfolio",
+        { withCredentials: true }
+      );
+      setPortfolioItems(updatedPortfolio.data.data.userPortfolio);
+    } catch (error) {
+      console.error("Failed to sell the coin:", error);
+      alert("Failed to sell the coin. Please try again.");
+    }
+
+    setSellQuantity(0);
+  };
+
+  const updateSellQuantity = (coinId, quantity) => {
+    const updatedPortfolioItems = portfolioItems.map((item) => {
+      if (item.coinId === coinId) {
+        return { ...item, sellQuantity: quantity };
+      }
+      return item;
+    });
+    setPortfolioItems(updatedPortfolioItems);
   };
 
   return (
@@ -111,7 +106,7 @@ const Portfolio = () => {
                         {loading ? (
                           <Spinner />
                         ) : (
-                          coin.map((curElem, id) => {
+                          portfolioItems.map((curElem, id) => {
                             const { image, symbol, name, quantity } = curElem;
                             return (
                               quantity !== 0 && (
@@ -144,13 +139,29 @@ const Portfolio = () => {
                                         QTY: {quantity}
                                       </div>
                                       <div className="flex flex-col w-1/2">
+                                        <input
+                                          type="number"
+                                          min="0"
+                                          className="py-1 px-2 text-lg bg-red-100 font-semibold font-nunito rounded-md"
+                                          value={curElem.sellQuantity || ""}
+                                          onChange={(e) =>
+                                            updateSellQuantity(
+                                              curElem.coinId,
+                                              parseInt(e.target.value)
+                                            )
+                                          }
+                                        />
+
                                         <button
-                                          className="py-1 whitespace-nowrap mobile:pl-2 text-lg bg-red-700 text-white font-semibold font-nunito mobile:text-md mobile:px-2 px-4 rounded-md"
+                                          className="py-1 whitespace-nowrap mt-2 text-lg bg-red-700 text-white font-semibold font-nunito px-4 rounded-md"
                                           onClick={() =>
-                                            handleSellCoin(curElem)
+                                            handleSellCoin(
+                                              curElem.coinId,
+                                              curElem.sellQuantity
+                                            )
                                           }
                                         >
-                                          sell coin
+                                          Sell Coin
                                         </button>
                                       </div>
                                     </div>

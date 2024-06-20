@@ -40,12 +40,11 @@ const buyCoins = asyncHandler(async (req, res) => {
       symbol: coin.symbol,
       name: coin.name,
       quantity: coin.quantity,
-      paymentToken: coin.paymentToken,
     };
 
     const user = await User.findById(req.user.id);
 
-    if (user) {
+    if (!user) {
       throw new ApiError(404, "User not found!");
     }
 
@@ -59,29 +58,33 @@ const buyCoins = asyncHandler(async (req, res) => {
   }
 });
 
-const removeCoins = asyncHandler(async (req, res) => {
-  try {
-    await User.findByIdAndUpdate(req.user.id, {
-      $pull: {
-        myCoins: { name: req.body.name },
-      },
-    });
-  } catch (error) {
-    throw new ApiError(401, error?.message || "Failed get remove coins!");
-  }
-});
-
 const sellCoins = asyncHandler(async (req, res) => {
   try {
-    const loginUser = await User.findById(req.user.id);
-    const userRes = loginUser.myCoins.find(
-      (e) => e.name === req.body.coins.name
-    );
-    userRes.quantity = req.body.coins.quantity;
-    await loginUser.save();
-    res.json(new ApiResponse(200, { loginUser }, "Coin sell Successfully!"));
+    const { coinId, quantity } = req.params;
+
+    if (!coinId) {
+      throw new Error("Coin ID is missing in the request parameters");
+    }
+
+    if (!quantity) {
+      throw new Error("Quantity is missing in the request parameters");
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      throw new ApiError(404, "User not found!");
+    }
+
+    const quantityToSell = Number(quantity);
+
+    await user.sellCoin(coinId, quantityToSell);
+
+    res.json(new ApiResponse(200, { user }, "Coin sold successfully!"));
   } catch (error) {
-    throw new ApiError(401, error?.message || "Failed to sell the coins!");
+    res
+      .status(401)
+      .json(new ApiError(401, error.message || "Failed to sell coin"));
   }
 });
 
@@ -99,4 +102,4 @@ const updateCoins = asyncHandler(async (req, res) => {
   }
 });
 
-export { getPortfolio, buyCoins, removeCoins, sellCoins, updateCoins };
+export { getPortfolio, buyCoins, sellCoins, updateCoins };
