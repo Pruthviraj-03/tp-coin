@@ -3,47 +3,21 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { SingleCoin } from "../Config/Api";
 import { CryptoState } from "../Context/CryptoContext";
-// import ChartCrypto from "./ChartCrypto";
+import ChartCrypto from "./ChartCrypto";
 import NavBar from "../Components/NavBar";
 import { useNavigate } from "react-router-dom";
-import { createContext } from "react";
 import Spinner from "../Components/Spinner";
-// import Cookies from "universal-cookie";
 import { useWatchlist } from "../Context/WatchlistContext";
 import { usePortfolio } from "../Context//PortfolioContext";
 
-//razorpay script
-function loadScript(src) {
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      resolve(false);
-    };
-    document.body.appendChild(script);
-  });
-}
-
-const __dev__ = document.domain === "localhost";
-// const __dev__ = document.domain === "cryptoexchange-webapp.herokuapp.com";
-export const CartContext = createContext();
-
-//main function
 const CryptoDetails = () => {
   const { addToWatchlist, watchlistItems } = useWatchlist();
-  const { buyCoin } = usePortfolio;
+  const { buyCoin } = usePortfolio();
   const { id } = useParams();
-  // const cookies = new Cookies();
   const navigate = useNavigate();
   const [coin, setCoin] = useState();
   const [loading, setLoading] = useState(false);
   const { currency, symbols } = CryptoState();
-  const [paymentToken, setPaymentToken] = useState("");
-  const [watchlistCoinArr, setWatchlistCoinArr] = useState([]);
-  const [portfolioCoinArr, setPortfolioCoinArr] = useState([]);
 
   const addWatchlist = () => {
     const watchListRes = watchlistItems.find(
@@ -59,9 +33,15 @@ const CryptoDetails = () => {
         watchlist_symbol: coin?.symbol,
         watchlist_name: coin?.name,
       };
-      addToWatchlist(coinData);
-      window.alert("Coin added into watchlist !");
-      navigate("/watchlist");
+
+      addToWatchlist(coinData)
+        .then(() => {
+          window.alert("Coin added into watchlist !");
+          navigate("/watchlist");
+        })
+        .catch((error) => {
+          console.error("Failed to add coin to watchlist:", error);
+        });
     }
   };
 
@@ -89,63 +69,13 @@ const CryptoDetails = () => {
     getData();
   }, []);
 
-  // getting coins data from user's portfolio
-  // let newPortfolioCoinArr = [];
-  // const getPortfolioData = async () => {
-  //   const res = await axios.get("/portfolio");
-  //   if (res) {
-  //     for (
-  //       let index = 0;
-  //       index < res.data.userProfile.myCoins.length;
-  //       index++
-  //     ) {
-  //       newPortfolioCoinArr.push({
-  //         name: res.data.userProfile.myCoins[index]?.name,
-  //         quantity: res.data.userProfile.myCoins[index]?.quantity,
-  //       });
-  //     }
-  //     setPortfolioCoinArr(newPortfolioCoinArr);
-  //   }
-  // };
-
-  // // watchlist data
-  // let newWatchlistCoinArr = [];
-  // const getWatchlistData = async () => {
-  //   const res = await axios.get("/watchlist");
-  //   if (res) {
-  //     for (
-  //       let index = 0;
-  //       index < res.data.userProfile.watchlists.length;
-  //       index++
-  //     ) {
-  //       newWatchlistCoinArr.push(
-  //         res.data.userProfile.watchlists[index]?.watchlist_name
-  //       );
-  //     }
-  //     setWatchlistCoinArr(newWatchlistCoinArr);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (cookies.get("isLogin")) {
-  //     getPortfolioData();
-  //     getWatchlistData();
-  //   }
-  // }, []);
-
-  //payment
   const handlePayment = async (e) => {
     e.preventDefault();
 
-    const amountInRupees = coin.market_data.current_price.inr;
+    const amountInRupees = coin.market_data.current_price.inr * counter;
     const amountInPaise = Math.round(amountInRupees * 100);
     const currency = "INR";
     const receiptId = "0123456789";
-
-    console.log("amount in rupees:", amountInRupees);
-    console.log("amount in paise:", amountInPaise);
-    console.log("currency:", currency);
-    console.log("receiptId:", receiptId);
 
     if (!amountInPaise) {
       window.alert("Amount is not defined!");
@@ -158,14 +88,13 @@ const CryptoDetails = () => {
         { amount: amountInPaise, currency, receipt: receiptId }
       );
       const order = response.data.data.order;
-      console.log("order:", order);
 
       const options = {
         key: process.env.REACT_APP_RAZORPAY_API_KEY,
         amount: amountInPaise,
         currency: order.currency,
         name: "Tp-Coin",
-        description: "Transaction for buying products.",
+        description: `Transaction for buying ${counter} ${coin.name}(s).`,
         order_id: order.id,
         handler: async function (response) {
           try {
@@ -173,7 +102,7 @@ const CryptoDetails = () => {
             alert(`Order ID: ${response.razorpay_order_id}`);
             window.alert("Payment success");
 
-            await buyCoin(coin || []);
+            await buyCoin(coin, counter);
             navigate("/portfolio");
           } catch (error) {
             console.error("Error adding to order:", error);
@@ -196,146 +125,6 @@ const CryptoDetails = () => {
       console.error("Error during payment process:", error);
     }
   };
-
-  // const displayRazorPay = async () => {
-  //   try {
-  //     const res = await loadScript(
-  //       "https://checkout.razorpay.com/v1/checkout.js"
-  //     );
-
-  //     if (!res) {
-  //       alert("Payment failed, check your connection!");
-  //       // toast.warning("Payment failed, check your connection!", {
-  //       //   position: toast.POSITION.TOP_CENTER,
-  //       //   autoClose: 3000,
-  //       // });
-  //     }
-
-  //     const response = await axios.post("/razorpay/payment", {
-  //       amount: coin?.market_data.current_price.inr * 100 * counter,
-  //     });
-
-  //     const convertRes = await response.data;
-  //     const { order } = convertRes;
-
-  //     const options = {
-  //       key: __dev__ ? "rzp_test_nvbgBY8uNQpEwZ" : "Production key here",
-  //       name: "TP-Coin",
-  //       description: "Transaction for buying coins.",
-  //       image: "https://example.com/your_logo",
-  //       currency: "INR",
-  //       amount: coin?.market_data.current_price.inr * 100 * counter,
-  //       order_id: order.id,
-
-  //       handler: async function (response) {
-  //         // console.log("frontend paymentId", response.razorpay_payment_id);
-  //         // console.log("frontend order_id", response.razorpay_order_id);
-  //         // console.log("frontend signature", response.razorpay_signature);
-
-  //         setPaymentToken(response.razorpay_payment_id);
-  //         localStorage.setItem("isBuyCoin", "true");
-  //         localStorage.setItem("quantity", counter);
-
-  //         window.location.reload(false);
-  //         alert("Payment successful!");
-  //         // toast.success("Payment successful!", {
-  //         //   position: toast.POSITION.TOP_CENTER,
-  //         //   autoClose: 3000,
-  //         // });
-  //       },
-
-  //       //remove this seaction while hosting
-  //       prefill: {
-  //         name: "rohit",
-  //         email: "test.rohit@example.com",
-  //         contact: "9898989898",
-  //       },
-  //       theme: {
-  //         color: "#3B3B3B",
-  //       },
-  //     };
-
-  //     const paymentObject = new window.Razorpay(options);
-  //     paymentObject.open();
-  //   } catch (error) {
-  //     navigate("/login");
-  //     // return toast.warning("Login to make a Payment!", {
-  //     //   position: toast.POSITION.TOP_CENTER,
-  //     //   autoClose: 3000,
-  //     // });
-  //   }
-  // };
-
-  // let order_uniqueId = (Math.random() + 1).toString(36).substring(7);
-
-  //buy coin process
-  // const buyCoin = async () => {
-  //   const portfolioRes = portfolioCoinArr.find((e) => e.name === coin?.name);
-
-  //   if (portfolioRes) {
-  //     let myCoins = {
-  //       coinId: coin?.id,
-  //       image: coin?.image.large,
-  //       symbol: coin?.symbol,
-  //       name: coin?.name,
-  //       // quantity: portfolioRes?.quantity + counter,
-  //       quantity:
-  //         portfolioRes?.quantity + parseInt(localStorage.getItem("quantity")),
-  //       paymentToken: paymentToken,
-  //     };
-
-  //     try {
-  //       const res = await axios.post(
-  //         "/buy/coins/update",
-  //         { myCoins: myCoins },
-  //         {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-
-  //       const data = res.data;
-  //       if (data) {
-  //         localStorage.removeItem("isBuyCoin");
-  //         localStorage.removeItem("quantity");
-  //         navigate("/");
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   } else {
-  //     const myCoins = {
-  //       coinId: coin?.id,
-  //       image: coin?.image.large,
-  //       symbol: coin?.symbol,
-  //       name: coin?.name,
-  //       quantity: localStorage.getItem("quantity"),
-  //       paymentToken: paymentToken,
-  //     };
-
-  //     try {
-  //       const res = await axios.post(
-  //         "/buy/coins",
-  //         { myCoins: myCoins },
-  //         {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-
-  //       const data = res.data;
-  //       if (data) {
-  //         localStorage.removeItem("isBuyCoin");
-  //         localStorage.removeItem("quantity");
-  //         navigate("/");
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  // };
 
   return (
     <>
@@ -437,7 +226,7 @@ const CryptoDetails = () => {
         )}
 
         <div className="w-1/2 mobile:w-full tablet:w-full">
-          {/* <ChartCrypto /> */}
+          <ChartCrypto />
 
           <div className="flex justify-center items-center gap-2 mt-8 pc:hidden laptop:hidden tablet:hidden">
             <button
