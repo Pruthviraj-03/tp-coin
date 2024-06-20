@@ -168,31 +168,31 @@ const logoutUser = asyncHandler(async (req, res) => {
   }
 });
 
-const deleteUser = asyncHandler(async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
+// const deleteUser = asyncHandler(async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user.id);
 
-    const imageID = user.profilePic.id;
-    await cloudinary.v2.uploader.destroy(imageID);
+//     const imageID = user.profilePic.id;
+//     await cloudinary.v2.uploader.destroy(imageID);
 
-    await User.findByIdAndRemove(req.user.id);
+//     await User.findByIdAndRemove(req.user.id);
 
-    res.clearCookie("token");
+//     res.clearCookie("token");
 
-    await mailHelper({
-      email: user.email,
-      subject: "Account Delete At TP-Coin",
-      message:
-        "You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!",
-      htmlMessage:
-        "<p>You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!</p>",
-    });
+//     await mailHelper({
+//       email: user.email,
+//       subject: "Account Delete At TP-Coin",
+//       message:
+//         "You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!",
+//       htmlMessage:
+//         "<p>You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!</p>",
+//     });
 
-    res.json(new ApiResponse(200, {}, "Account deleted successfully"));
-  } catch (error) {
-    throw new ApiError(500, error?.message || "Failed to delete user account");
-  }
-});
+//     res.json(new ApiResponse(200, {}, "Account deleted successfully"));
+//   } catch (error) {
+//     throw new ApiError(500, error?.message || "Failed to delete user account");
+//   }
+// });
 
 const sendOTP = async (req, res) => {
   try {
@@ -215,11 +215,11 @@ const sendOTP = async (req, res) => {
     const otp = user.generateOtp();
     await user.save();
 
-    await client.messages.create({
-      body: `[#] ${otp} is your OTP to login/register to TP-COIN. DO NOT share with anyone. TP-COIN never calls to ask for OTP. The otp expires in 10 mins.`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: formattedPhoneNumber,
-    });
+    // await client.messages.create({
+    //   body: `[#] ${otp} is your OTP to login/register to TP-COIN. DO NOT share with anyone. TP-COIN never calls to ask for OTP. The otp expires in 10 mins.`,
+    //   from: process.env.TWILIO_PHONE_NUMBER,
+    //   to: formattedPhoneNumber,
+    // });
 
     res.json(new ApiResponse(200, {}, "OTP sent successfully"));
   } catch (error) {
@@ -305,7 +305,7 @@ export {
   userLogin,
   sendDetailToDB,
   logoutUser,
-  deleteUser,
+  // deleteUser,
   sendOTP,
   verifyOTP,
   resendOTP,

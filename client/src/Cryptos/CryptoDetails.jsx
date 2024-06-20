@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import Spinner from "../Components/Spinner";
 import { useWatchlist } from "../Context/WatchlistContext";
 import { usePortfolio } from "../Context//PortfolioContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CryptoDetails = () => {
   const { addToWatchlist, watchlistItems } = useWatchlist();
@@ -25,7 +27,10 @@ const CryptoDetails = () => {
     );
 
     if (watchListRes) {
-      window.alert("Coin already added into watchlist !");
+      toast.info("Coin already added into watchlist!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } else {
       const coinData = {
         watchlist_coinId: coin?.id,
@@ -36,8 +41,11 @@ const CryptoDetails = () => {
 
       addToWatchlist(coinData)
         .then(() => {
-          window.alert("Coin added into watchlist !");
           navigate("/watchlist");
+          toast.success("Coin added into watchlist!", {
+            position: "top-center",
+            autoClose: 3000,
+          });
         })
         .catch((error) => {
           console.error("Failed to add coin to watchlist:", error);
@@ -45,7 +53,6 @@ const CryptoDetails = () => {
     }
   };
 
-  //increment and decrement
   const [counter, setCounter] = useState(1);
   const incrementCounter = () => setCounter(counter + 1);
   let decrementCounter = () => setCounter(counter - 1);
@@ -53,7 +60,6 @@ const CryptoDetails = () => {
     decrementCounter = () => setCounter(1);
   }
 
-  //get details of selected coin
   const getData = async () => {
     try {
       setLoading(true);
@@ -77,11 +83,6 @@ const CryptoDetails = () => {
     const currency = "INR";
     const receiptId = "0123456789";
 
-    if (!amountInPaise) {
-      window.alert("Amount is not defined!");
-      return;
-    }
-
     try {
       const response = await axios.post(
         "http://localhost:8000/api/v2/razorpay/payment",
@@ -98,15 +99,21 @@ const CryptoDetails = () => {
         order_id: order.id,
         handler: async function (response) {
           try {
-            alert(`Payment ID: ${response.razorpay_payment_id}`);
-            alert(`Order ID: ${response.razorpay_order_id}`);
-            window.alert("Payment success");
+            // alert(`Payment ID: ${response.razorpay_payment_id}`);
+            // alert(`Order ID: ${response.razorpay_order_id}`);
 
             await buyCoin(coin, counter);
             navigate("/portfolio");
+            toast.success("Payment success!", {
+              position: "top-center",
+              autoClose: 3000,
+            });
           } catch (error) {
             console.error("Error adding to order:", error);
-            window.alert("Failed to add products to order.");
+            toast.warning("Login first to make a Payment!", {
+              position: "top-center",
+              autoClose: 3000,
+            });
           }
         },
         prefill: {
@@ -123,6 +130,10 @@ const CryptoDetails = () => {
       payment.open();
     } catch (error) {
       console.error("Error during payment process:", error);
+      toast.warning("Login first to make a Payment!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     }
   };
 

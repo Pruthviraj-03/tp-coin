@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
 import NavBar from "../Components/NavBar";
 import { BsTrash } from "react-icons/bs";
 import ShoppingCart from "../Images/ShoppingCart.png";
 import Spinner from "../Components/Spinner";
 import { useWatchlist } from "../Context/WatchlistContext";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Watchlist = () => {
   const {
@@ -29,6 +30,10 @@ const Watchlist = () => {
         setWatchlistItems(userWatchlist);
       } catch (error) {
         navigate("/login");
+        toast.warning("Login first to access profile page!", {
+          position: "top-center",
+          autoClose: 3000,
+        });
         console.error("Failed to fetch user wishlist:", error);
       }
     };
@@ -38,7 +43,10 @@ const Watchlist = () => {
 
   const removeCoinFromWatchlist = (coinName) => {
     removeFromWatchlist(coinName);
-    alert("Product removed from the wishlist.");
+    toast.success("Coin removed from the wishlist.", {
+      position: "top-center",
+      autoClose: 3000,
+    });
   };
 
   return (

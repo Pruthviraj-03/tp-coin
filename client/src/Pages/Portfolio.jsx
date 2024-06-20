@@ -5,6 +5,8 @@ import portfolio from "../Images/portfolio.png";
 import Spinner from "../Components/Spinner";
 import { usePortfolio } from "../Context/PortfolioContext.js";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Portfolio = () => {
   const { portfolioItems, setPortfolioItems, sellCoin } = usePortfolio();
@@ -23,6 +25,10 @@ const Portfolio = () => {
         setPortfolioItems(userPortfolio);
       } catch (error) {
         navigate("/login");
+        toast.warning("Login first to access profile page!", {
+          position: "top-center",
+          autoClose: 3000,
+        });
         console.error("Failed to fetch user wishlist:", error);
       }
     };
@@ -32,24 +38,36 @@ const Portfolio = () => {
 
   const handleSellCoin = async (coinId, quantity) => {
     if (!quantity) {
-      alert("Please enter a valid quantity to sell.");
+      toast.warning("Please enter a valid quantity to sell.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
     const coin = portfolioItems.find((item) => item.coinId === coinId);
     if (!coin) {
-      alert("Coin not found in portfolio.");
+      toast.info("Coin not found in portfolio.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
     if (quantity > coin.quantity) {
-      alert("Insufficient quantity to sell.");
+      toast.info("Insufficient quantity to sell.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
     try {
       await sellCoin(coinId, quantity);
-      alert(`${quantity} coins of ${coin.name} sold successfully!`);
+      toast.success(`${quantity} coins of ${coin.name} sold successfully!`, {
+        position: "top-center",
+        autoClose: 3000,
+      });
 
       const updatedPortfolio = await axios.get(
         "http://localhost:8000/api/v2/getPortfolio",
@@ -58,7 +76,10 @@ const Portfolio = () => {
       setPortfolioItems(updatedPortfolio.data.data.userPortfolio);
     } catch (error) {
       console.error("Failed to sell the coin:", error);
-      alert("Failed to sell the coin. Please try again.");
+      toast.error("Failed to sell the coin. Please try again.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     }
 
     setSellQuantity(0);

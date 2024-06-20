@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import signImg from "../Images/signup.png";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Otp = () => {
   const [otp, setOtp] = useState(Array(4).fill(""));
@@ -28,17 +30,14 @@ const Otp = () => {
       newOtp[index] = value;
       setOtp(newOtp);
 
-      // Focus the next input if it exists
       if (element.nextElementSibling) {
         element.nextElementSibling.focus();
       }
     } else if (value === "") {
-      // Handle backspace
       const newOtp = [...otp];
       newOtp[index] = "";
       setOtp(newOtp);
 
-      // Focus the previous input if it exists
       if (element.previousElementSibling) {
         element.previousElementSibling.focus();
       }
@@ -59,11 +58,25 @@ const Otp = () => {
 
       if (response.status === 200) {
         navigate("/");
-      } else {
-        console.error("OTP verification failed:", response.data.message);
+        toast.success("User logged in successfully!", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     } catch (error) {
       console.error("Failed to verify OTP:", error);
+      toast.error("Failed to verify OTP. Please try again.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 

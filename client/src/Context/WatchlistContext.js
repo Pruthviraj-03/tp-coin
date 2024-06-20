@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const WatchlistContext = createContext();
 
@@ -46,12 +48,25 @@ export const WatchlistProvider = ({ children }) => {
 
   const removeAllWatchlist = async () => {
     try {
+      if (watchlistItems.length === 0) {
+        toast.info("Watchlist is already empty!", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+        return;
+      }
+
       const response = await axios.delete(
         "http://localhost:8000/api/v3/removeAllWatchlist",
         { withCredentials: true }
       );
+
       console.log("Watchlist cleared:", response.data);
       setWatchlistItems([]);
+      toast.success("Watchlist is empty now!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error("Failed to clear watchlist:", error.response);
     }

@@ -12,6 +12,8 @@ import { RiMoneyCnyCircleLine } from "react-icons/ri";
 import { BsNewspaper } from "react-icons/bs";
 import axios from "axios";
 import { CryptoState } from "../Context/CryptoContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -41,9 +43,12 @@ const NavBar = () => {
       await axios.get("http://localhost:8000/api/v1/users/logout", {
         withCredentials: true,
       });
-      window.alert("User logout success");
       setUserData(null);
       navigate("/login");
+      toast.success("User logged out successfully !", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error("Failed to logout:", error);
     }

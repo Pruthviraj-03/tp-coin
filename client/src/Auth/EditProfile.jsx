@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import ProfilePng from "../Images/profile.png";
 import NavBar from "../Components/NavBar";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -54,6 +56,10 @@ const EditProfile = () => {
       );
       console.log("User details saved successfully.");
       navigate("/profile");
+      toast.success("Profile updated successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error("Error saving user details:", error);
     }

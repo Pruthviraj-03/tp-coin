@@ -6,7 +6,8 @@ import { CryptoState } from "../Context/CryptoContext";
 import Spinner from "../Components/Spinner";
 import { RiSearch2Line } from "react-icons/ri";
 import NavBar from "../Components/NavBar";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Cryptos = () => {
   const [coins, setCoins] = useState([]);
@@ -30,12 +31,12 @@ const Cryptos = () => {
     getData();
   }, [currency]);
 
-  // useEffect(() => {
-  //   toast.info("Tap to see Deatils!", {
-  //     position: toast.POSITION.TOP_CENTER,
-  //     autoClose: 3000,
-  //   });
-  // }, []);
+  useEffect(() => {
+    return toast.info("Tap to see Deatils!", {
+      position: "top-center",
+      autoClose: 3000,
+    });
+  }, []);
 
   return (
     <>

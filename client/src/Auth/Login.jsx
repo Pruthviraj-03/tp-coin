@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import signImg from "../Images/signup.png";
 import NavBar from "../Components/NavBar";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -29,8 +31,19 @@ const Register = () => {
       );
       localStorage.setItem("phoneNumber", phoneNumber);
       navigate("/login/otp");
+      toast.success(`OTP send on ${phoneNumber} successfully !`, {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error("Failed to send OTP:", error);
+      toast.error(
+        "Failed to send OTP. Please check the phone number or format.",
+        {
+          position: "top-center",
+          autoClose: 3000,
+        }
+      );
     }
   };
 

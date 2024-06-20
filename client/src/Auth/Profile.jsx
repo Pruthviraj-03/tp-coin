@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import ProfilePng from "../Images/profile.png";
 import NavBar from "../Components/NavBar";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Profile = () => {
   const [userData, setUserData] = useState({});
@@ -17,6 +19,10 @@ const Profile = () => {
       setUserData(response.data.data.user);
     } catch (error) {
       navigate("/login");
+      toast.warning("Login first to access profile page!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       console.log("error fetching user data:", error);
     }
   };
@@ -24,6 +30,14 @@ const Profile = () => {
   useEffect(() => {
     getUser();
   }, []);
+
+  const handleAction = () => {
+    navigate("/editprofile");
+    toast.info("You can now edit your profile!", {
+      position: "top-center",
+      autoClose: 3000,
+    });
+  };
 
   return (
     <>
@@ -66,8 +80,9 @@ const Profile = () => {
                       <button
                         className="bg-gray-600 text-white font-nunito font-semibold p-2 rounded-md shadow-md mt-10 
                           mobile:py-2 w-48 mobile:w-full"
+                        onClick={handleAction}
                       >
-                        <Link to="/editprofile">Edit Profile</Link>
+                        Edit Profile
                       </button>
 
                       <button

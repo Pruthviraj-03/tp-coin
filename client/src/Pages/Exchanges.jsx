@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Spinner from "../Components/Spinner";
 import NavBar from "../Components/NavBar";
-// import { toast } from "react-toastify";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Exchanges = () => {
   const [exchanges, setExchanges] = useState([]);
@@ -36,12 +37,12 @@ const Exchanges = () => {
     fetchExchanges();
   }, []);
 
-  // useEffect(() => {
-  //   return toast.info("Tap to see Deatils!", {
-  //     position: toast.POSITION.TOP_CENTER,
-  //     autoClose: 3000,
-  //   });
-  // }, []);
+  useEffect(() => {
+    return toast.info("Tap to see Deatils!", {
+      position: "top-center",
+      autoClose: 3000,
+    });
+  }, []);
 
   return (
     <>

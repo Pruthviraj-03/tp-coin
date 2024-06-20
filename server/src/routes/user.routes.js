@@ -4,7 +4,7 @@ import {
   userLogin,
   sendDetailToDB,
   logoutUser,
-  deleteUser,
+  // deleteUser,
   sendOTP,
   verifyOTP,
   resendOTP,
@@ -35,7 +35,7 @@ router.route("/editprofile").post(authMiddleWare, sendDetailToDB);
 
 router.route("/logout").get(authMiddleWare, logoutUser);
 
-router.route("/deleteUser").delete(authMiddleWare, deleteUser);
+// router.route("/deleteUser").delete(authMiddleWare, deleteUser);
 
 router.route("/send-otp").post(sendOTP);
 
