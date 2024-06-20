@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ProfilePng from "../Images/profile.png";
 import NavBar from "../Components/NavBar";
 import { toast } from "react-toastify";
@@ -37,6 +37,31 @@ const Profile = () => {
       position: "top-center",
       autoClose: 3000,
     });
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        "http://localhost:8000/api/v1/users/deleteUser",
+        {
+          withCredentials: true,
+        }
+      );
+
+      toast.success("Account deleted successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+
+      setUserData({});
+      navigate("/login");
+    } catch (error) {
+      toast.error("Failed to delete account. Please try again.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+      console.log("Error deleting account:", error);
+    }
   };
 
   return (
@@ -88,8 +113,10 @@ const Profile = () => {
                       <button
                         className="bg-red-600 text-white font-nunito font-semibold p-2 text-sm rounded-md shadow-md mt-10 
                           mobile:text-base mobile:py-2 w-48 mobile:w-full"
+                        type="button"
+                        onClick={handleDelete}
                       >
-                        <Link to="/deleteprofile">Delete Account</Link>
+                        Delete Account
                       </button>
                     </div>
                   </div>

@@ -4,16 +4,16 @@ import {
   userLogin,
   sendDetailToDB,
   logoutUser,
-  // deleteUser,
+  deleteUser,
   sendOTP,
   verifyOTP,
   resendOTP,
-  sendEmail,
 } from "../controllers/user.controller.js";
 import { razorpayPayment } from "../utils/Razorpay.utils.js";
 import { authMiddleWare } from "../middlewares/auth.middleware.js";
 import passport from "passport";
 import("../utils/Passport.utils.js");
+
 const router = Router();
 
 router.route("/google").get(
@@ -35,15 +35,13 @@ router.route("/editprofile").post(authMiddleWare, sendDetailToDB);
 
 router.route("/logout").get(authMiddleWare, logoutUser);
 
-// router.route("/deleteUser").delete(authMiddleWare, deleteUser);
+router.route("/deleteUser").delete(authMiddleWare, deleteUser);
 
 router.route("/send-otp").post(sendOTP);
 
 router.route("/verify-otp").post(verifyOTP);
 
 router.route("/resend-otp").post(resendOTP);
-
-router.route("/subscribe").post(sendEmail);
 
 router.route("/refresh-token").post(refreshAccessToken);
 

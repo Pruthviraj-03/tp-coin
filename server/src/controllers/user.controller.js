@@ -7,7 +7,6 @@ import twilio from "twilio";
 import dotenv from "dotenv";
 import { mailHelper } from "../utils/MailHelper.utils.js";
 import { CookieToken } from "../utils/CookieToken.utils.js";
-import cloudinary from "cloudinary";
 
 dotenv.config({
   path: "./.env",
@@ -168,31 +167,35 @@ const logoutUser = asyncHandler(async (req, res) => {
   }
 });
 
-// const deleteUser = asyncHandler(async (req, res) => {
-//   try {
-//     const user = await User.findById(req.user.id);
+const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
 
-//     const imageID = user.profilePic.id;
-//     await cloudinary.v2.uploader.destroy(imageID);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
 
-//     await User.findByIdAndRemove(req.user.id);
+    await User.findByIdAndDelete(req.user.id);
 
-//     res.clearCookie("token");
+    // Define the options object for clearing cookies
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "strict",
+      path: "/",
+    };
 
-//     await mailHelper({
-//       email: user.email,
-//       subject: "Account Delete At TP-Coin",
-//       message:
-//         "You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!",
-//       htmlMessage:
-//         "<p>You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!</p>",
-//     });
-
-//     res.json(new ApiResponse(200, {}, "Account deleted successfully"));
-//   } catch (error) {
-//     throw new ApiError(500, error?.message || "Failed to delete user account");
-//   }
-// });
+    res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .clearCookie("userId", options)
+      .clearCookie("user", options)
+      .json(new ApiResponse(200, {}, "Account deleted successfully"));
+  } catch (error) {
+    throw new ApiError(500, error?.message || "Failed to delete user account");
+  }
+});
 
 const sendOTP = async (req, res) => {
   try {
@@ -215,11 +218,11 @@ const sendOTP = async (req, res) => {
     const otp = user.generateOtp();
     await user.save();
 
-    // await client.messages.create({
-    //   body: `[#] ${otp} is your OTP to login/register to TP-COIN. DO NOT share with anyone. TP-COIN never calls to ask for OTP. The otp expires in 10 mins.`,
-    //   from: process.env.TWILIO_PHONE_NUMBER,
-    //   to: formattedPhoneNumber,
-    // });
+    await client.messages.create({
+      body: `[#] ${otp} is your OTP to login/register to TP-COIN. DO NOT share with anyone. TP-COIN never calls to ask for OTP. The otp expires in 10 mins.`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: formattedPhoneNumber,
+    });
 
     res.json(new ApiResponse(200, {}, "OTP sent successfully"));
   } catch (error) {
@@ -282,32 +285,14 @@ const resendOTP = asyncHandler(async (req, res) => {
   }
 });
 
-const sendEmail = asyncHandler(async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    await mailHelper({
-      email,
-      subject: "Welcome to ModaZen Newsletter!",
-      message: "Thank you for subscribing to our newsletter!",
-      htmlMessage: "<p>Thank you for subscribing to our newsletter!</p>",
-    });
-
-    res.json(new ApiResponse(200, { email }, "Email send successfully."));
-  } catch (error) {
-    throw new ApiError(500, error?.message || "Failed to send an email.");
-  }
-});
-
 export {
   generateAccessAndRefreshTokens,
   refreshAccessToken,
   userLogin,
   sendDetailToDB,
   logoutUser,
-  // deleteUser,
+  deleteUser,
   sendOTP,
   verifyOTP,
   resendOTP,
-  sendEmail,
 };
