@@ -9,7 +9,6 @@ import {
   verifyOTP,
   resendOTP,
 } from "../controllers/user.controller.js";
-import { razorpayPayment } from "../utils/Razorpay.utils.js";
 import { authMiddleWare } from "../middlewares/auth.middleware.js";
 import passport from "passport";
 import("../utils/Passport.utils.js");
@@ -44,7 +43,5 @@ router.route("/verify-otp").post(verifyOTP);
 router.route("/resend-otp").post(resendOTP);
 
 router.route("/refresh-token").post(refreshAccessToken);
-
-router.route("/razorpay/payment").post(authMiddleWare, razorpayPayment);
 
 export { router };

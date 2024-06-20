@@ -47,8 +47,10 @@ passport.use(
           await mailHelper({
             email,
             subject: "Login At Tp-Coin",
-            message: "You've successfully Login at Tp-Coin!",
-            htmlMessage: "<p>You've successfully Login at Tp-Coin!</p>",
+            message:
+              "You've successfully Login at TP-Coin India's leading Crypto Currency Exchange!",
+            htmlMessage:
+              "<p>You've successfully Login at TP-Coin India's leading Crypto Currency Exchange!</p>",
           });
         }
 
@@ -57,7 +59,6 @@ passport.use(
 
         done(null, user);
       } catch (error) {
-        console.error("Error in GoogleStrategy callback:", error);
         done(error, null);
       }
     }

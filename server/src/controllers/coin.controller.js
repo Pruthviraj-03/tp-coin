@@ -88,18 +88,4 @@ const sellCoins = asyncHandler(async (req, res) => {
   }
 });
 
-const updateCoins = asyncHandler(async (req, res) => {
-  try {
-    const loginUser = await User.findById(req.user.id);
-    const userRes = loginUser.myCoins.find(
-      (e) => e.name === req.body.myCoins.name
-    );
-    userRes.quantity = req.body.myCoins.quantity;
-    await loginUser.save();
-    res.json(new ApiResponse(200, { loginUser }, "Coin buy Successfully!"));
-  } catch (error) {
-    throw new ApiError(401, error?.message || "Failed to buy the coins!");
-  }
-});
-
-export { getPortfolio, buyCoins, sellCoins, updateCoins };
+export { getPortfolio, buyCoins, sellCoins };

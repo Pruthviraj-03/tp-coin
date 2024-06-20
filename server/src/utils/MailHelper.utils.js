@@ -37,10 +37,8 @@ const mailHelper = async (user) => {
     };
 
     const info = await transporter.sendMail(message);
-    console.log("Email sent:", info.response);
     return info;
   } catch (error) {
-    console.error("Error sending email:", error.message);
     throw new Error("Failed to send email");
   }
 };

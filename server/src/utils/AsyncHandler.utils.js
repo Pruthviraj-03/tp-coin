@@ -14,7 +14,3 @@ const asyncHandler = (fn) => async (req, res, next) => {
 };
 
 export { asyncHandler };
-
-// How can u use this
-
-// const refreshAccessToken = asyncHandler(async (req, res) => { }

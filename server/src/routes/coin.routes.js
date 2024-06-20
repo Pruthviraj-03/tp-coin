@@ -4,7 +4,6 @@ import {
   getPortfolio,
   buyCoins,
   sellCoins,
-  updateCoins,
 } from "../controllers/coin.controller.js";
 import { razorpayPayment } from "../utils/Razorpay.utils.js";
 
@@ -15,8 +14,6 @@ router.route("/getPortfolio").get(authMiddleWare, getPortfolio);
 router.route("/buyCoins").post(authMiddleWare, buyCoins);
 
 router.post("/sellCoins/:coinId/:quantity", authMiddleWare, sellCoins);
-
-router.route("/updateCoins").post(authMiddleWare, updateCoins);
 
 router.route("/razorpay/payment").post(razorpayPayment);
 

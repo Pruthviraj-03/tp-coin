@@ -100,10 +100,8 @@ const userLogin = asyncHandler(async (req, res) => {
     if (!user) {
       throw new ApiError(401, "User not found");
     }
-    // console.log("User not found");
 
     res.json(new ApiResponse(200, { user }, "User data found"));
-    // console.log("User data found", user);
   } catch (error) {
     throw new ApiError(500, error.message || "Failed to fetch user data");
   }
@@ -144,7 +142,6 @@ const logoutUser = asyncHandler(async (req, res) => {
   try {
     req.logout((err) => {
       if (err) {
-        console.log("Failed to logout:", err);
         throw new ApiError(401, err?.message || "Failed to logout");
       }
 
@@ -153,6 +150,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
       };
+
       res
         .status(200)
         .clearCookie("accessToken", options)
@@ -162,7 +160,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "User logged out successfully"));
     });
   } catch (error) {
-    console.log("Failed to logout:", error);
     throw new ApiError(401, error?.message || "Failed to logout");
   }
 });
@@ -177,13 +174,21 @@ const deleteUser = asyncHandler(async (req, res) => {
 
     await User.findByIdAndDelete(req.user.id);
 
-    // Define the options object for clearing cookies
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
     };
+
+    await mailHelper({
+      email,
+      subject: "Account Delete At TP-Coin",
+      message:
+        "You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!",
+      htmlMessage:
+        "<p>You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!</p>",
+    });
 
     res
       .status(200)

@@ -20,7 +20,6 @@ const razorpayPayment = asyncHandler(async (req, res) => {
     }
 
     const { amount, currency, receipt } = req.body;
-    console.log("req.body:", req.body);
 
     const options = {
       amount: amount,
@@ -35,9 +34,7 @@ const razorpayPayment = asyncHandler(async (req, res) => {
     }
 
     res.json(new ApiResponse(200, { order }, "Payment successful"));
-    console.log("Payment successful");
   } catch (error) {
-    console.error("Error during payment process:", error);
     throw new ApiError(500, error.message || "Failed in payment process");
   }
 });
