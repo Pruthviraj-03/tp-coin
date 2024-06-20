@@ -3,7 +3,6 @@ import { authMiddleWare } from "../middlewares/auth.middleware.js";
 import {
   getPortfolio,
   buyCoins,
-  removeCoins,
   sellCoins,
   updateCoins,
 } from "../controllers/coin.controller.js";
@@ -15,9 +14,7 @@ router.route("/getPortfolio").get(authMiddleWare, getPortfolio);
 
 router.route("/buyCoins").post(authMiddleWare, buyCoins);
 
-router.route("/removeCoins").post(authMiddleWare, removeCoins);
-
-router.route("/sellCoins").post(authMiddleWare, sellCoins);
+router.post("/sellCoins/:coinId/:quantity", authMiddleWare, sellCoins);
 
 router.route("/updateCoins").post(authMiddleWare, updateCoins);
 

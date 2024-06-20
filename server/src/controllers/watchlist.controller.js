@@ -43,7 +43,7 @@ const addToWatchlist = asyncHandler(async (req, res) => {
 
     const user = await User.findById(req.user.id);
 
-    if (user) {
+    if (!user) {
       throw new ApiError(404, "User not found!");
     }
 
