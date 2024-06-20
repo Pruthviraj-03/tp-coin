@@ -161,7 +161,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         .clearCookie("userId", options)
         .clearCookie("user", options)
         .json(new ApiResponse(200, {}, "User logged out successfully"));
-      // console.log("User logged out successfully");
     });
   } catch (error) {
     console.log("Failed to logout:", error);
@@ -207,7 +206,6 @@ const sendOTP = async (req, res) => {
       throw new ApiError(400, "Invalid phone number format");
     }
 
-    // Proceed with OTP generation and sending
     let user = await User.findOne({ phoneNumber: phoneNumber });
 
     if (!user) {
@@ -216,13 +214,12 @@ const sendOTP = async (req, res) => {
 
     const otp = user.generateOtp();
     await user.save();
-    console.log("user is:", user);
 
-    // await client.messages.create({
-    //   body: `[#] ${otp} is your OTP to login/register to Modazen. DO NOT share with anyone. Modazen never calls to ask for OTP. The otp expires in 10 mins.`,
-    //   from: process.env.TWILIO_PHONE_NUMBER,
-    //   to: formattedPhoneNumber,
-    // });
+    await client.messages.create({
+      body: `[#] ${otp} is your OTP to login/register to TP-COIN. DO NOT share with anyone. TP-COIN never calls to ask for OTP. The otp expires in 10 mins.`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: formattedPhoneNumber,
+    });
 
     res.json(new ApiResponse(200, {}, "OTP sent successfully"));
   } catch (error) {
@@ -234,37 +231,28 @@ const verifyOTP = asyncHandler(async (req, res) => {
   try {
     const { phoneNumber, otp } = req.body;
 
-    // console.log("number is:", phoneNumber, "and", "otp is:", otp);
-
     const user = await User.findOne({
       phoneNumber,
     }).select("+otp +otpExpires");
 
-    // console.log("user otp is:", user);
-
     if (!user || user.otp !== otp || user.otpExpires < new Date()) {
-      // console.log("Invalid or expired otp");
       return res.status(400).json({ error: "Invalid or expired OTP" });
     }
 
-    // Clear the OTP and OTP expiration
     user.otp = null;
     user.otpExpires = null;
     await user.save();
 
     const tokens = await generateAccessAndRefreshTokens(user);
-    // console.log("Generated tokens:", tokens);
     CookieToken(user, res, tokens);
 
-    // await client.messages.create({
-    //   body: "You successfully logged in at Modazen!",
-    //   from: process.env.TWILIO_PHONE_NUMBER,
-    //   to: `+91${phoneNumber}`,
-    // });
+    await client.messages.create({
+      body: "You successfully logged in at TP-COIN!",
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: `+91${phoneNumber}`,
+    });
 
-    // Redirect to the homepage (assuming this is an API endpoint)
     res.json(new ApiResponse(200, { user }, "OTP verify successfully"));
-    // console.log("otp verified successfully");
   } catch (error) {
     throw new ApiError(500, error?.message || "Failed to verify the otp");
   }

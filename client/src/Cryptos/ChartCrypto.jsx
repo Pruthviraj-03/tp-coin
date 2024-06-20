@@ -6,19 +6,20 @@ import { HistoricalChart } from "../Config/Api";
 import { chartDays } from "../Config/ChartData";
 import Spinner from "../Components/Spinner";
 import { Line } from "react-chartjs-2";
-import { Chart } from "chart.js";
-import zoomPlugin from "chartjs-plugin-zoom";
-import { CrosshairPlugin } from "chartjs-plugin-crosshair";
+import Chart from "chart.js/auto";
 
-Chart.register(CrosshairPlugin);
-Chart.register(zoomPlugin);
+// Import Chart.js plugins
+import zoomPlugin from "chartjs-plugin-zoom";
+import crosshairPlugin from "chartjs-plugin-crosshair";
+
+// Register the plugins
+Chart.register(zoomPlugin, crosshairPlugin);
 
 const ChartCrypto = () => {
   const [coinHistory, setCoinHistory] = useState();
   const [days, setDays] = useState(1);
 
   const { id } = useParams();
-
   const { currency } = CryptoState();
 
   const getHistoryData = async () => {
@@ -38,7 +39,7 @@ const ChartCrypto = () => {
     <div className="font-nunito">
       <div className="flex justify-between items-center mx-2">
         <p className="uppercase font-bold text-2xl my-8 mobile:text-xl mobile:py-5">
-          coin chart :
+          Coin Chart:
         </p>
         <button
           className="text-xs font-semibold text-yellow-900 bg-gray-300 h-10 p-1 rounded-sm uppercase"
@@ -53,18 +54,11 @@ const ChartCrypto = () => {
         <>
           <Line
             data={{
-              labels: coinHistory.map((coin) => {
-                let date = new Date(coin[0]);
-                let time =
-                  date.getHours() > 12
-                    ? `${date.getHours() - 12}:${date.getMinutes()} PM`
-                    : `${date.getHours()}:${date.getMinutes()} AM`;
-                return days === 1 ? time : date.toLocaleDateString();
-              }),
+              labels: coinHistory.map((coin) => new Date(coin[0])),
               datasets: [
                 {
                   data: coinHistory.map((coin) => coin[1]),
-                  label: `Price ( Past ${days} Days ) in ${currency}`,
+                  label: `Price (Past ${days} Days) in ${currency}`,
                   borderColor: "#EEBC1D",
                 },
               ],
@@ -92,6 +86,14 @@ const ChartCrypto = () => {
                     },
                     mode: "xy",
                   },
+                },
+              },
+              scales: {
+                x: {
+                  type: "category", // Use category scale for x-axis
+                },
+                y: {
+                  // Add other y-axis options if needed
                 },
               },
             }}

@@ -35,9 +35,6 @@ const userSchema = new mongoose.Schema(
         quantity: {
           type: Number,
         },
-        paymentToken: {
-          type: String,
-        },
       },
     ],
     watchlists: [
@@ -126,20 +123,33 @@ userSchema.methods.removeFromWatchlist = async function (coinName) {
   }
 };
 
-// Add to cart
+// buy coin
 userSchema.methods.buyCoin = async function (coin) {
-  this.myCoins.push(coin);
+  const existingCoin = this.myCoins.find((c) => c.coinId === coin.coinId);
+
+  if (existingCoin) {
+    existingCoin.quantity += coin.quantity;
+  } else {
+    this.myCoins.push(coin);
+  }
+
   await this.save();
 };
 
-// Remove from cart
-userSchema.methods.removeFromCart = async function (productId) {
-  try {
-    this.cart = this.cart.filter((product) => product.id !== productId);
-    await this.save();
-    return this.cart;
-  } catch (error) {
-    throw new Error("Failed to remove product from wishlist");
+// sell coin
+userSchema.methods.sellCoin = async function (coinId, quantity) {
+  const coinIndex = this.myCoins.findIndex((c) => c.coinId === coinId);
+
+  if (coinIndex !== -1) {
+    if (this.myCoins[coinIndex].quantity >= quantity) {
+      this.myCoins[coinIndex].quantity -= quantity;
+      await this.save();
+      return true;
+    } else {
+      throw new Error("Insufficient quantity to sell");
+    }
+  } else {
+    throw new Error("Coin not found in portfolio");
   }
 };
 
