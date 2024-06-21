@@ -9,14 +9,14 @@ const LimNews = () => {
     try {
       const setHeader = {
         headers: {
-          "X-RapidAPI-Key":
+          "x-rapidapi-key":
             "801cfd6090msh43ba5a116c51f0ep1004f8jsna6de03eee58b",
-          "X-RapidAPI-Host": "cryptocurrency-news2.p.rapidapi.com",
+          "x-rapidapi-host": "cryptonews16.p.rapidapi.com",
         },
       };
 
       const res = await axios.get(
-        "https://cryptocurrency-news2.p.rapidapi.com/v1/coindesk",
+        "https://cryptonews16.p.rapidapi.com/news",
         setHeader
       );
 
@@ -40,7 +40,7 @@ const LimNews = () => {
       <div className="flex flex-row flex-wrap justify-around mx-48 mobile:mx-2">
         {news ? (
           news.slice(0, 6).map((curElm, id) => {
-            const { title, url } = curElm;
+            const { title, link } = curElm;
             return (
               <div
                 key={id}
@@ -50,8 +50,8 @@ const LimNews = () => {
                 <div className="h-1/2 w-full flex flex-col gap-5 font-nunito">
                   <p className="text-xl font-semibold">{title}</p>
                   <p className="text-2xs text-blue-700 cursor-pointer">
-                    <a target="_blank" rel="noopener noreferrer" href={url}>
-                      {url}
+                    <a target="_blank" rel="noopener noreferrer" href={link}>
+                      {link}
                     </a>
                   </p>
                 </div>
