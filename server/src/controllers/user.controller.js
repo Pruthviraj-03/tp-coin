@@ -214,11 +214,11 @@ const sendOTP = async (req, res) => {
     const otp = user.generateOtp();
     await user.save();
 
-    await client.messages.create({
-      body: `[#] ${otp} is your OTP to login/register to TP-COIN. DO NOT share with anyone. TP-COIN never calls to ask for OTP. The otp expires in 10 mins.`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: formattedPhoneNumber,
-    });
+    // await client.messages.create({
+    //   body: `[#] ${otp} is your OTP to login/register to TP-COIN. DO NOT share with anyone. TP-COIN never calls to ask for OTP. The otp expires in 10 mins.`,
+    //   from: process.env.TWILIO_PHONE_NUMBER,
+    //   to: formattedPhoneNumber,
+    // });
 
     res.json(new ApiResponse(200, {}, "OTP sent successfully"));
   } catch (error) {
@@ -245,11 +245,11 @@ const verifyOTP = asyncHandler(async (req, res) => {
     const tokens = await generateAccessAndRefreshTokens(user);
     CookieToken(user, res, tokens);
 
-    await client.messages.create({
-      body: "You successfully logged in at TP-COIN!",
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: `+91${phoneNumber}`,
-    });
+    // await client.messages.create({
+    //   body: "You successfully logged in at TP-COIN!",
+    //   from: process.env.TWILIO_PHONE_NUMBER,
+    //   to: `+91${phoneNumber}`,
+    // });
 
     res.json(new ApiResponse(200, { user }, "OTP verify successfully"));
   } catch (error) {
