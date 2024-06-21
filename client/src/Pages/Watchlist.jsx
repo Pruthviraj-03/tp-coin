@@ -28,7 +28,7 @@ const Watchlist = () => {
         setWatchlistItems(userWatchlist);
       } catch (error) {
         navigate("/login");
-        toast.warning("Login first to access profile page!", {
+        toast.warning("Login first to access watchlist page!", {
           position: "top-center",
           autoClose: 3000,
         });

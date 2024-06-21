@@ -20,6 +20,23 @@ const CryptoDetails = () => {
   const [coin, setCoin] = useState();
   const [loading, setLoading] = useState(false);
   const { currency, symbols } = CryptoState();
+  const [userData, setUserData] = useState(null);
+
+  const getUser = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/v1/users/login/success",
+        { withCredentials: true }
+      );
+      setUserData(response.data.data.user);
+    } catch (error) {
+      console.log("error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const addWatchlist = () => {
     const watchListRes = watchlistItems.find(
@@ -39,17 +56,25 @@ const CryptoDetails = () => {
         watchlist_name: coin?.name,
       };
 
-      addToWatchlist(coinData)
-        .then(() => {
-          navigate("/watchlist");
-          toast.success("Coin added into watchlist!", {
-            position: "top-center",
-            autoClose: 3000,
+      if (userData) {
+        addToWatchlist(coinData)
+          .then(() => {
+            navigate("/watchlist");
+            toast.success("Coin added into watchlist!", {
+              position: "top-center",
+              autoClose: 3000,
+            });
+          })
+          .catch((error) => {
+            console.error("Failed to add coin to watchlist:", error);
           });
-        })
-        .catch((error) => {
-          console.error("Failed to add coin to watchlist:", error);
+      } else {
+        navigate("/login");
+        toast.warning("Login first to add coin into watchlist!", {
+          position: "top-center",
+          autoClose: 3000,
         });
+      }
     }
   };
 
@@ -126,8 +151,16 @@ const CryptoDetails = () => {
         },
       };
 
-      const payment = new window.Razorpay(options);
-      payment.open();
+      if (userData) {
+        const payment = new window.Razorpay(options);
+        payment.open();
+      } else {
+        navigate("/login");
+        toast.warning("Login first to make a Payment!", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+      }
     } catch (error) {
       console.error("Error during payment process:", error);
       toast.warning("Login first to make a Payment!", {

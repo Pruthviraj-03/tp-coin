@@ -23,7 +23,7 @@ const Portfolio = () => {
         setPortfolioItems(userPortfolio);
       } catch (error) {
         navigate("/login");
-        toast.warning("Login first to access profile page!", {
+        toast.warning("Login first to access portfolio page!", {
           position: "top-center",
           autoClose: 3000,
         });
