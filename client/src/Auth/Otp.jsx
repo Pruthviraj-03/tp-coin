@@ -48,7 +48,7 @@ const Otp = () => {
     const enteredOtp = otp.join("");
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/verify-otp",
+        "https://tp-coin-api.vercel.app/api/v1/users/verify-otp",
         {
           phoneNumber,
           otp: enteredOtp,
@@ -82,9 +82,12 @@ const Otp = () => {
 
   const handleResend = async () => {
     try {
-      await axios.post("http://localhost:8000/api/v1/users/resend-otp", {
-        phoneNumber,
-      });
+      await axios.post(
+        "https://tp-coin-api.vercel.app/api/v1/users/resend-otp",
+        {
+          phoneNumber,
+        }
+      );
       setTimer(30);
     } catch (error) {
       console.error("Failed to resend OTP:", error);

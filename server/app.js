@@ -62,7 +62,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v2", coinRouter);
 app.use("/api/v3", watchlistRouter);
 
-// http://localhost:8000/api/v1/users/google/callback
-// http://localhost:8000/api/v2
+// https://tp-coin-api.vercel.app/api/v1/users/google/callback
+// https://tp-coin-api.vercel.app/api/v2
 
 export { app };

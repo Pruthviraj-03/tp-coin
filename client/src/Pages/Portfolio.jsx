@@ -16,7 +16,7 @@ const Portfolio = () => {
     const fetchUserPortfolio = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/v2/getPortfolio",
+          "https://tp-coin-api.vercel.app/api/v2/getPortfolio",
           { withCredentials: true }
         );
         const { userPortfolio } = response.data.data;
@@ -70,7 +70,7 @@ const Portfolio = () => {
       });
 
       const updatedPortfolio = await axios.get(
-        "http://localhost:8000/api/v2/getPortfolio",
+        "https://tp-coin-api.vercel.app/api/v2/getPortfolio",
         { withCredentials: true }
       );
       setPortfolioItems(updatedPortfolio.data.data.userPortfolio);

@@ -10,7 +10,7 @@ const Header = () => {
   const getUser = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/v1/users/login/success",
+        "https://tp-coin-api.vercel.app/api/v1/users/login/success",
         { withCredentials: true }
       );
       setUserData(response.data.data.user);

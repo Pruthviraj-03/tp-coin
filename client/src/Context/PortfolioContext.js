@@ -21,7 +21,7 @@ export const PortfolioProvider = ({ children }) => {
       };
 
       const response = await axios.post(
-        "http://localhost:8000/api/v2/buyCoins",
+        "https://tp-coin-api.vercel.app/api/v2/buyCoins",
         { coin: coinData },
         { withCredentials: true }
       );
@@ -40,7 +40,7 @@ export const PortfolioProvider = ({ children }) => {
   const sellCoin = async (coinId, quantity) => {
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/v2/sellCoins/${coinId}/${quantity}`,
+        `https://tp-coin-api.vercel.app/api/v2/sellCoins/${coinId}/${quantity}`,
         {},
         { withCredentials: true }
       );

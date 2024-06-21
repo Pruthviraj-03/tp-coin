@@ -18,7 +18,7 @@ const EditProfile = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/v1/users/login/success",
+          "https://tp-coin-api.vercel.app/api/v1/users/login/success",
           { withCredentials: true }
         );
 
@@ -48,7 +48,7 @@ const EditProfile = () => {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/users/editprofile",
+        "https://tp-coin-api.vercel.app/api/v1/users/editprofile",
         {
           ...formData,
         },

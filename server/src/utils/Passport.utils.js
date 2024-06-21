@@ -15,7 +15,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:8000/api/v1/users/google/callback",
+      callbackURL: "https://tp-coin-api.vercel.app/api/v1/users/google/callback",
       scope: ["profile", "email"],
       passReqToCallback: true,
     },

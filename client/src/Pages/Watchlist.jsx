@@ -21,7 +21,7 @@ const Watchlist = () => {
     const fetchUserWatchlist = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/v3/getWatchlist",
+          "https://tp-coin-api.vercel.app/api/v3/getWatchlist",
           { withCredentials: true }
         );
         const { userWatchlist } = response.data.data;

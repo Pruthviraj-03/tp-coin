@@ -15,7 +15,7 @@ export const WatchlistProvider = ({ children }) => {
   const addToWatchlist = async (coin) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v3/addWatchlistCoin",
+        "https://tp-coin-api.vercel.app/api/v3/addWatchlistCoin",
         { coin: coin },
         { withCredentials: true }
       );
@@ -31,7 +31,7 @@ export const WatchlistProvider = ({ children }) => {
   const removeFromWatchlist = async (coinName) => {
     try {
       await axios.delete(
-        `http://localhost:8000/api/v3/removeWatchlistCoin/${coinName}`,
+        `https://tp-coin-api.vercel.app/api/v3/removeWatchlistCoin/${coinName}`,
         { withCredentials: true }
       );
       const updatedWatchlist = watchlistItems.filter(
@@ -54,7 +54,7 @@ export const WatchlistProvider = ({ children }) => {
       }
 
       const response = await axios.delete(
-        "http://localhost:8000/api/v3/removeAllWatchlist",
+        "https://tp-coin-api.vercel.app/api/v3/removeAllWatchlist",
         { withCredentials: true }
       );
 

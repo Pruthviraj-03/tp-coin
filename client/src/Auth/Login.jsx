@@ -13,7 +13,10 @@ const Login = () => {
   const navigate = useNavigate();
 
   const loginWithGoogle = () => {
-    window.open("http://localhost:8000/api/v1/users/google/callback", "_self");
+    window.open(
+      "https://tp-coin-api.vercel.app/api/v1/users/google/callback",
+      "_self"
+    );
   };
 
   const handlePhoneNumberChange = (e) => {
@@ -23,7 +26,7 @@ const Login = () => {
   const handleContinue = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/users/send-otp",
+        "https://tp-coin-api.vercel.app/api/v1/users/send-otp",
         {
           phoneNumber,
         },

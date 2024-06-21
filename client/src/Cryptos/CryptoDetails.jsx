@@ -25,7 +25,7 @@ const CryptoDetails = () => {
   const getUser = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/v1/users/login/success",
+        "https://tp-coin-api.vercel.app/api/v1/users/login/success",
         { withCredentials: true }
       );
       setUserData(response.data.data.user);
@@ -110,7 +110,7 @@ const CryptoDetails = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v2/razorpay/payment",
+        "https://tp-coin-api.vercel.app/api/v2/razorpay/payment",
         { amount: amountInPaise, currency, receipt: receiptId }
       );
       const order = response.data.data.order;
