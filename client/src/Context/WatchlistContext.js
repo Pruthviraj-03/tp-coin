@@ -35,7 +35,7 @@ export const WatchlistProvider = ({ children }) => {
         { withCredentials: true }
       );
       const updatedWatchlist = watchlistItems.filter(
-        (coin) => coin.name !== coinName
+        (coin) => coin.watchlist_name !== coinName
       );
       setWatchlistItems(updatedWatchlist);
     } catch (error) {

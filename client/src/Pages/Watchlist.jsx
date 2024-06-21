@@ -110,14 +110,16 @@ const Watchlist = () => {
                                 </div>
                               </div>
 
-                              <div
-                                onClick={() =>
-                                  removeCoinFromWatchlist(
-                                    curElem.watchlist_name
-                                  )
-                                }
-                              >
-                                <button className="text-red-700 text-3xl font-bold rounded-lg p-2 mobile:pl-2 mobile:px-0">
+                              <div>
+                                <button
+                                  className="text-red-700 text-3xl font-bold rounded-lg p-2 mobile:pl-2 mobile:px-0"
+                                  type="button"
+                                  onClick={() =>
+                                    removeCoinFromWatchlist(
+                                      curElem.watchlist_name
+                                    )
+                                  }
+                                >
                                   <BsTrash />
                                 </button>
                               </div>
