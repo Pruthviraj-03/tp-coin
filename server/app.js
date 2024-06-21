@@ -20,7 +20,7 @@ const app = express();
 // Configure middleware
 app.use(
   cors({
-    origin: "https://tp-coin.vercel.app",
+    origin: ["https://vercel.com/pruthvirajs-projects-b504173f/tp-coin"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
