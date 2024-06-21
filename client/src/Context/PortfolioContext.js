@@ -44,7 +44,6 @@ export const PortfolioProvider = ({ children }) => {
         {},
         { withCredentials: true }
       );
-      console.log("res", response.data);
     } catch (error) {
       console.error("Failed to sell the coin:", error.response);
     }

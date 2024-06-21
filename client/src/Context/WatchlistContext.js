@@ -21,8 +21,6 @@ export const WatchlistProvider = ({ children }) => {
       );
       if (response.data.data.coin) {
         setWatchlistItems([...watchlistItems, response.data.data.coin]);
-      } else {
-        console.error("coin data is undefined in the response");
       }
     } catch (error) {
       navigate("/login");
@@ -40,7 +38,6 @@ export const WatchlistProvider = ({ children }) => {
         (coin) => coin.name !== coinName
       );
       setWatchlistItems(updatedWatchlist);
-      console.log("Remove coin from watchlist");
     } catch (error) {
       console.error("Failed to remove coin from watchlist:", error.response);
     }
@@ -61,7 +58,6 @@ export const WatchlistProvider = ({ children }) => {
         { withCredentials: true }
       );
 
-      console.log("Watchlist cleared:", response.data);
       setWatchlistItems([]);
       toast.success("Watchlist is empty now!", {
         position: "top-center",

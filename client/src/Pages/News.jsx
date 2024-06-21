@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from "react";
-import Spinner from "../Components/Spinner";
-import News2 from "./News2";
-import NavBar from "../Components/NavBar";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Spinner, NavBar } from "../Components/index.js";
 
 const News = () => {
   const [news, setNews] = useState([]);
-  const [date] = useState(new Date());
 
   const getData = async () => {
     try {
       const setHeader = {
         headers: {
-          Accept: "application/json",
+          "X-RapidAPI-Key":
+            "801cfd6090msh43ba5a116c51f0ep1004f8jsna6de03eee58b",
+          "X-RapidAPI-Host": "cryptocurrency-news2.p.rapidapi.com",
         },
       };
-      let day = date.getDate();
-      const res = await fetch(
-        `https://newsapi.org/v2/everything?q=cryptocoins&from=2022-02-${day}&sortBy=publishedAt&apiKey=4c9a117cba154963a69fc2aa982e4ce1`,
+
+      const res = await axios.get(
+        "https://cryptocurrency-news2.p.rapidapi.com/v1/coindesk",
         setHeader
       );
 
-      const data = await res.json();
-      setNews(data.articles);
+      const response = res.data.data;
+      console.log("res", response);
+      setNews(response);
     } catch (err) {
       console.log(err);
     }
@@ -34,30 +35,23 @@ const News = () => {
   return (
     <>
       <NavBar />
-      <div className="pt-24 flex flex-row flex-wrap justify-around mx-10 mobile:mx-2">
+      <div className="pt-24 flex flex-row flex-wrap justify-around mx-32 tablet:mx-5 laptop:mx-10 mobile:mx-2">
         {news ? (
-          news.map((curElm, id) => {
-            const { title, urlToImage, description, url } = curElm;
+          news.slice(0, 48).map((curElm, id) => {
+            const { title, url } = curElm;
             return (
-              <div key={id}>
-                <div
-                  className="flex flex-col my-10 overflow-x-hidden w-96 h-100 p-2 border border-gray-400 
-                    rounded-lg shadow-xl bg-gray-100 outline-none scrollbar-hide"
-                >
-                  <img
-                    src={urlToImage}
-                    alt="imag of news"
-                    className="w-full h-1/2"
-                  />
-                  <div className="h-1/2 w-full flex flex-col gap-5 font-nunito">
-                    <p className="text-2xl font-semibold">{title}</p>
-                    <p className="text-lg font-light">{description}</p>
-                    <p className="text-sm text-blue-700 cursor-pointer">
-                      <a target="_blank" rel="noopener noreferrer" href={url}>
-                        {url}
-                      </a>
-                    </p>
-                  </div>
+              <div
+                key={id}
+                className="flex flex-col my-5 overflow-x-hidden w-96 h-48 p-2 border border-gray-400 
+                    rounded-lg shadow-md bg-gray-100 outline-none scrollbar-hide"
+              >
+                <div className="h-1/2 w-full flex flex-col gap-5 font-nunito">
+                  <p className="text-xl font-semibold">{title}</p>
+                  <p className="text-2xs text-blue-700 cursor-pointer">
+                    <a target="_blank" rel="noopener noreferrer" href={url}>
+                      {url}
+                    </a>
+                  </p>
                 </div>
               </div>
             );
@@ -65,7 +59,6 @@ const News = () => {
         ) : (
           <Spinner />
         )}
-        <News2 />
       </div>
     </>
   );

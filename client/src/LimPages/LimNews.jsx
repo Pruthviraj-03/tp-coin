@@ -20,8 +20,8 @@ const LimNews = () => {
         setHeader
       );
 
-      const responce = res.data.data;
-      setNews(responce);
+      const response = res.data.data;
+      setNews(response);
     } catch (err) {
       console.log(err);
     }

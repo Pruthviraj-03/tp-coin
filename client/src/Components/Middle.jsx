@@ -1,6 +1,7 @@
 import React from "react";
 import Analyticsteam from "../Images/Analyticsteam.png";
 import Winners from "../Images/Winners.png";
+import { Link } from "react-router-dom";
 
 const Middle = () => {
   return (
@@ -35,13 +36,13 @@ const Middle = () => {
             </p>
 
             <button className="text-center font-semibold bg-gray-900 text-white w-32 py-1 rounded-md">
-              <a
+              <Link
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://en.wikipedia.org/wiki/Cryptocurrency"
+                to="https://en.wikipedia.org/wiki/Cryptocurrency"
               >
                 Learn more...
-              </a>
+              </Link>
             </button>
           </div>
         </div>

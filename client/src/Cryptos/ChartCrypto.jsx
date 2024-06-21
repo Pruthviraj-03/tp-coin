@@ -7,12 +7,9 @@ import { chartDays } from "../Config/ChartData";
 import Spinner from "../Components/Spinner";
 import { Line } from "react-chartjs-2";
 import Chart from "chart.js/auto";
-
-// Import Chart.js plugins
 import zoomPlugin from "chartjs-plugin-zoom";
 import crosshairPlugin from "chartjs-plugin-crosshair";
 
-// Register the plugins
 Chart.register(zoomPlugin, crosshairPlugin);
 
 const ChartCrypto = () => {
@@ -90,10 +87,7 @@ const ChartCrypto = () => {
               },
               scales: {
                 x: {
-                  type: "category", // Use category scale for x-axis
-                },
-                y: {
-                  // Add other y-axis options if needed
+                  type: "category",
                 },
               },
             }}

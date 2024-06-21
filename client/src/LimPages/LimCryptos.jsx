@@ -176,7 +176,10 @@ const LimCryptos = () => {
       </div>
 
       <p className="text-center text-gray-500 font-light py-2 font-nunito">
-        <Link to="/coins" className="cursor-pointer">
+        <Link
+          to="/coins"
+          className="inline-block px-6 py-2 text-sm font-medium leading-6 text-center text-white transition bg-blue-500 rounded-full shadow ripple hover:shadow-lg hover:bg-blue-600 focus:outline-none"
+        >
           view more crypto's
         </Link>
       </p>

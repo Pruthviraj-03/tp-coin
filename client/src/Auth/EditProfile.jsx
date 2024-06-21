@@ -54,7 +54,6 @@ const EditProfile = () => {
         },
         { withCredentials: true }
       );
-      console.log("User details saved successfully.");
       navigate("/profile");
       toast.success("Profile updated successfully!", {
         position: "top-center",

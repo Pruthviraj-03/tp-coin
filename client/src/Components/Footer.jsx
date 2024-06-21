@@ -21,30 +21,30 @@ const Footer = () => {
         </Link>
       </div>
       <div className="flex justify-center gap-6 py-5 cursor-pointer">
-        <a
+        <Link
           target="_blank"
           rel="noopener noreferrer"
-          href={twitterUrl}
+          to={twitterUrl}
           className="text-2xl hover:text-gray-100"
         >
           <FaTwitter />
-        </a>
-        <a
+        </Link>
+        <Link
           target="_blank"
           rel="noopener noreferrer"
-          href={youtubeUrl}
+          to={youtubeUrl}
           className="text-2xl hover:text-gray-100"
         >
           <FaYoutube />
-        </a>
-        <a
+        </Link>
+        <Link
           target="_blank"
           rel="noopener noreferrer"
-          href={facebookUrl}
+          to={facebookUrl}
           className="text-2xl hover:text-gray-100"
         >
           <FaFacebookSquare />
-        </a>
+        </Link>
       </div>
       <div className="text-center">
         <p className="text-sm">

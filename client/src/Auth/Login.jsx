@@ -8,7 +8,7 @@ import NavBar from "../Components/NavBar";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Register = () => {
+const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const navigate = useNavigate();
 
@@ -84,14 +84,14 @@ const Register = () => {
                       <span className="text-base">CONTINUE</span>
                     </div>
                     <h2 className="text-gray-600 text-center text-base font-bold">
-                      ---------- or with Google account -----------
+                      ----------- or with Google account -----------
                     </h2>
                     <div
                       className="flex items-center justify-center gap-4 h-12 w-full bg-red-600 text-white font-bold rounded cursor-pointer hover:bg-red-700"
                       onClick={loginWithGoogle}
                     >
                       <FontAwesomeIcon className="text-xl" icon={faGoogle} />
-                      <span className="text-base">Google</span>
+                      <span className="text-lg">Google</span>
                     </div>
                   </div>
                 </div>
@@ -104,4 +104,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

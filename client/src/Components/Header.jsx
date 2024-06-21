@@ -13,7 +13,6 @@ const Header = () => {
         "http://localhost:8000/api/v1/users/login/success",
         { withCredentials: true }
       );
-      console.log("User data response:", response.data);
       setUserData(response.data.data.user);
     } catch (error) {
       console.log("error fetching user data:", error);

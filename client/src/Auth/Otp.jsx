@@ -82,7 +82,7 @@ const Otp = () => {
 
   const handleResend = async () => {
     try {
-      await axios.post("/api/v1/users/resend-otp", {
+      await axios.post("http://localhost:8000/api/v1/users/resend-otp", {
         phoneNumber,
       });
       setTimer(30);

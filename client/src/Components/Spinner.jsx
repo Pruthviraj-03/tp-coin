@@ -1,7 +1,7 @@
 import React from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 
-const ReactSpinners = () => {
+const Spinner = () => {
   return (
     <div className="flex justify-center my-96 gap-5">
       <ClipLoader color="black" loading size={40} />
@@ -12,4 +12,4 @@ const ReactSpinners = () => {
   );
 };
 
-export default ReactSpinners;
+export default Spinner;

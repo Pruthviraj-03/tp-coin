@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Spinner from "../Components/Spinner";
-import NavBar from "../Components/NavBar";
+import { Spinner, NavBar } from "../Components/index.js";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Exchanges = () => {
   const [exchanges, setExchanges] = useState([]);
+  const [openExchanges, setOpenExchanges] = useState({});
 
   useEffect(() => {
     const fetchExchanges = async () => {
@@ -28,7 +28,6 @@ const Exchanges = () => {
         };
         const response = await axios.request(options);
         setExchanges(response.data || []);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching exchanges:", error);
       }
@@ -38,11 +37,18 @@ const Exchanges = () => {
   }, []);
 
   useEffect(() => {
-    return toast.info("Tap to see Deatils!", {
+    return toast.info("Tap to see details!", {
       position: "top-center",
       autoClose: 3000,
     });
   }, []);
+
+  const toggleExchanges = (id) => {
+    setOpenExchanges((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   return (
     <>
@@ -51,7 +57,7 @@ const Exchanges = () => {
         Exchanges
       </p>
 
-      {exchanges ? (
+      {exchanges.length > 0 ? (
         exchanges.map((curElem, id) => {
           const {
             name,
@@ -59,59 +65,51 @@ const Exchanges = () => {
             current_price,
             market_cap_rank,
             total_volume,
-            // websiteUrl,
             image,
           } = curElem;
 
           return (
             <div
               key={id}
-              className="collapse border border-base-300 rounded-md shadow-lg my-5 py-4 mx-52 
-                    laptop:mx-10 tablet:mx-10 mobile:mx-2"
+              className="border border-base-300 rounded-md shadow-lg my-5 py-4 mx-52 laptop:mx-10 tablet:mx-10 mobile:mx-2 hover:bg-gray-200"
             >
-              <input type="checkbox" />
-
-              <div className="collapse-title text-xl font-medium">
-                <div className="flex items-center gap-5 px-5 cursor-pointer">
+              <div
+                className="text-xl font-medium px-5 py-4 cursor-pointer"
+                onClick={() => toggleExchanges(id)}
+              >
+                <div className="flex items-center gap-5">
                   <div className="w-20 h-20">
-                    <img src={image} alt="icons" />
+                    <img src={image} alt={`${name} icon`} />
                   </div>
-                  <p className="font-bold text-2xl uppercase pb-2">{name}</p>
+                  <p className="font-bold text-2xl uppercase">{name}</p>
                 </div>
               </div>
 
-              <div className="collapse-content">
-                <div className="flex justify-evenly items-center flex-wrap mobile:flex-col mobile:items-start mobile:px-5 mobile:pt-5">
-                  <p className="font-semibold">Rank : {market_cap_rank}</p>
-                  <p className="font-semibold">
-                    lastTickerCreatedAt :
-                    <span className="text-sm px-2 font-light">
-                      {last_updated}
-                    </span>
-                  </p>
-                  <p className="font-semibold">
-                    price :
-                    <span className="text-sm px-2 font-light">
-                      {current_price}
-                    </span>
-                  </p>
-                  <p className="font-semibold">
-                    volume :
-                    <span className="text-sm px-2 font-light">
-                      {total_volume}
-                    </span>
-                  </p>
-                  {/* <p className="text-xs text-blue-600 font-medium lowercase cursor-pointer">
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={websiteUrl}
-                    >
-                      {websiteUrl}
-                    </a>
-                  </p> */}
+              {openExchanges[id] && (
+                <div className="px-5 py-4 bg-white">
+                  <div className="flex justify-evenly items-center flex-wrap mobile:flex-col mobile:items-start">
+                    <p className="font-semibold">Rank: {market_cap_rank}</p>
+                    <p className="font-semibold">
+                      Last Updated:
+                      <span className="text-sm px-2 font-light">
+                        {last_updated}
+                      </span>
+                    </p>
+                    <p className="font-semibold">
+                      Price:
+                      <span className="text-sm px-2 font-light">
+                        {current_price}
+                      </span>
+                    </p>
+                    <p className="font-semibold">
+                      Volume:
+                      <span className="text-sm px-2 font-light">
+                        {total_volume}
+                      </span>
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })

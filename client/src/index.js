@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 import "react-alice-carousel/lib/alice-carousel.css";
-import CryptoContext from "./Context/CryptoContext";
+import { CryptoContext } from "./Context/CryptoContext";
 import { WatchlistProvider } from "./Context/WatchlistContext";
 import { PortfolioProvider } from "./Context/PortfolioContext";
 import { ToastContainer } from "react-toastify";

@@ -16,6 +16,51 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const NavBar = () => {
+  const NavBar = [
+    {
+      id: 1,
+      logo: <VscHome />,
+      to: "/",
+      title: "Home",
+    },
+    {
+      id: 2,
+      logo: <SiApacheecharts />,
+      to: "/coins",
+      title: "Buy Crypto's",
+    },
+    {
+      id: 3,
+      logo: <MdFavoriteBorder />,
+      to: "/portfolio",
+      title: "Portfolio",
+    },
+    {
+      id: 4,
+      logo: <FiEye />,
+      to: "/watchlist",
+      title: "WatchList",
+    },
+    {
+      id: 5,
+      logo: <RiMoneyCnyCircleLine />,
+      to: "/exchanges",
+      title: "Exchanges",
+    },
+    {
+      id: 6,
+      logo: <BsNewspaper />,
+      to: "/news",
+      title: "News",
+    },
+    {
+      id: 7,
+      logo: <CgProfile />,
+      to: "/profile",
+      title: "Profile",
+    },
+  ];
+
   const navigate = useNavigate();
   const { currency, setCurrency } = CryptoState();
   const [menu, setMenu] = useState(false);
@@ -27,7 +72,6 @@ const NavBar = () => {
         "http://localhost:8000/api/v1/users/login/success",
         { withCredentials: true }
       );
-      console.log("User data response:", response.data);
       setUserData(response.data.data.user);
     } catch (error) {
       console.log("error fetching user data:", error);
@@ -123,55 +167,16 @@ const NavBar = () => {
               <div className="px-10">
                 <img src={cImg} alt="app logo png" />
               </div>
-
-              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
-                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
-                  <VscHome />
-                </span>
-                <Link to="/">Home</Link>
-              </div>
-
-              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
-                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
-                  <SiApacheecharts />
-                </span>
-                <Link to="/coins">Buy Crypto's</Link>
-              </div>
-
-              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
-                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
-                  <MdFavoriteBorder />
-                </span>
-                <Link to="/portfolio">Portfolio</Link>
-              </div>
-
-              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
-                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
-                  <FiEye />
-                </span>
-                <Link to="/watchlist">WatchList</Link>
-              </div>
-
-              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
-                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
-                  <RiMoneyCnyCircleLine />
-                </span>
-                <Link to="/exchanges">Exchanges</Link>
-              </div>
-
-              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
-                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
-                  <BsNewspaper />
-                </span>
-                <Link to="/news">News</Link>
-              </div>
-
-              <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
-                <span className="text-2xl laptop:text-4xl tablet:text-4xl">
-                  <CgProfile />
-                </span>
-                <Link to="/profile">Profile</Link>
-              </div>
+              {NavBar.map((items) => (
+                <Link to={items.to} key={items.id}>
+                  <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-500 hover:text-white px-8 py-2 mobile:py-1">
+                    <span className="text-2xl laptop:text-4xl tablet:text-4xl">
+                      {items.logo}
+                    </span>
+                    {items.title}
+                  </div>
+                </Link>
+              ))}
             </ul>
           </div>
         </div>
