@@ -48,13 +48,17 @@ const Profile = () => {
         }
       );
 
-      toast.success("Account deleted successfully!", {
-        position: "top-center",
-        autoClose: 3000,
-      });
+      if (response.status === 200) {
+        toast.success("Account deleted successfully!", {
+          position: "top-center",
+          autoClose: 3000,
+        });
 
-      setUserData({});
-      navigate("/login");
+        setUserData({});
+        navigate("/login");
+      } else {
+        throw new Error("Failed to delete account");
+      }
     } catch (error) {
       toast.error("Failed to delete account. Please try again.", {
         position: "top-center",

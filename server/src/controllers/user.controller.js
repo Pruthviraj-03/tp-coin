@@ -181,15 +181,6 @@ const deleteUser = asyncHandler(async (req, res) => {
       path: "/",
     };
 
-    await mailHelper({
-      email,
-      subject: "Account Delete At TP-Coin",
-      message:
-        "You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!",
-      htmlMessage:
-        "<p>You've successfully Deleted your account at TP-Coin India's leading Crypto Currency Exchange!</p>",
-    });
-
     res
       .status(200)
       .clearCookie("accessToken", options)
