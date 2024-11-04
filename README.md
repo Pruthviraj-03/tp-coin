@@ -1,4 +1,4 @@
-# TP-Coin - Online Fashion Store
+# TP-Coin - Cryptocurrency Exchange Platform
 
 ## Project Description
 
@@ -54,6 +54,8 @@ TP-Coin is a cryptocurrency trading platform built on the MERN stack, offering u
 ## Deployment
 
 - **Vercel:** Platform for frontend deployment and hosting.
+- **Frontend:** [TP-Coin Frontend](https://tp-coin.vercel.app/)
+- **Backend:** [TP-Coin Backend](https://tp-coin-api.vercel.app/)
 
 ## Installation and Setup
 
